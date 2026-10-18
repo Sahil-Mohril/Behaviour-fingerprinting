@@ -1,0 +1,39 @@
+#separator \x09
+#set_separator	,
+#empty_field	(empty)
+#unset_field	-
+#path	conn
+#open	2018-09-10-12-01-00
+#fields	ts	uid	id.orig_h	id.orig_p	id.resp_h	id.resp_p	proto	service	duration	orig_bytes	resp_bytes	conn_state	local_orig	local_resp	missed_bytes	history	orig_pkts	orig_ip_bytes	resp_pkts	resp_ip_bytes	tunnel_parents   label   detailed-label
+#types	time	string	addr	port	addr	port	enum	string	interval	count	count	string	bool	bool	count	string	count	count	count	count	set[string]   string   string
+1536580860.000000	Ccfd842343354	192.168.100.103	34894	138.253.167.23	23	tcp	-	-	-	-	S0	-	-	0	S	1	40	0	0	-   Malicious   PartOfAHorizontalPortScan
+1536580860.800000	C1d744770a087	192.168.100.103	56200	177.93.217.230	23	tcp	-	-	-	-	S0	-	-	0	S	1	40	0	0	-   Malicious   PartOfAHorizontalPortScan
+1536580861.600000	C89b01289bafa	192.168.100.103	30551	163.45.133.22	23	tcp	-	-	-	-	S0	-	-	0	S	1	40	0	0	-   Malicious   PartOfAHorizontalPortScan
+1536580862.400000	C221c38efbaeb	192.168.100.103	38665	221.62.232.3	23	tcp	-	-	-	-	S0	-	-	0	S	1	40	0	0	-   Malicious   PartOfAHorizontalPortScan
+1536580863.200000	Cd5e48d959c31	192.168.100.103	59996	69.66.22.135	23	tcp	-	-	-	-	S0	-	-	0	S	1	40	0	0	-   Malicious   PartOfAHorizontalPortScan
+1536580864.000000	C7a14b5a432cf	192.168.100.103	33586	42.134.25.47	23	tcp	-	-	-	-	S0	-	-	0	S	1	40	0	0	-   Malicious   PartOfAHorizontalPortScan
+1536580864.800000	C6967c26e7a42	192.168.100.103	39501	115.91.138.89	23	tcp	-	-	-	-	S0	-	-	0	S	1	40	0	0	-   Malicious   PartOfAHorizontalPortScan
+1536580865.600000	C094ccdbde747	192.168.100.103	38206	10.7.9.188	23	tcp	-	-	-	-	S0	-	-	0	S	1	40	0	0	-   Malicious   PartOfAHorizontalPortScan
+1536580866.400000	C6100fa619774	192.168.100.103	46850	122.125.228.28	23	tcp	-	-	-	-	S0	-	-	0	S	1	40	0	0	-   Malicious   PartOfAHorizontalPortScan
+1536580867.200000	Cdd46a66d58b5	192.168.100.103	51512	127.201.157.177	23	tcp	-	-	-	-	S0	-	-	0	S	1	40	0	0	-   Malicious   PartOfAHorizontalPortScan
+1536580868.000000	Caf763ac4da9a	192.168.100.103	36508	214.71.207.254	23	tcp	-	-	-	-	S0	-	-	0	S	1	40	0	0	-   Malicious   PartOfAHorizontalPortScan
+1536580868.800000	C074c213bca7f	192.168.100.103	32317	161.130.220.42	23	tcp	-	-	-	-	S0	-	-	0	S	1	40	0	0	-   Malicious   PartOfAHorizontalPortScan
+1536580869.600000	C2b410e2ec40a	192.168.100.103	51798	216.195.144.154	23	tcp	-	-	-	-	S0	-	-	0	S	1	40	0	0	-   Malicious   PartOfAHorizontalPortScan
+1536580870.400000	C17294b05e1ae	192.168.100.103	45055	48.80.137.115	23	tcp	-	-	-	-	S0	-	-	0	S	1	40	0	0	-   Malicious   PartOfAHorizontalPortScan
+1536580871.200000	C86c700ed6b02	192.168.100.103	41932	85.165.125.9	23	tcp	-	-	-	-	S0	-	-	0	S	1	40	0	0	-   Malicious   PartOfAHorizontalPortScan
+1536580872.000000	C6f8c4f3e885e	192.168.100.103	41684	47.0.171.98	23	tcp	-	-	-	-	S0	-	-	0	S	1	40	0	0	-   Malicious   PartOfAHorizontalPortScan
+1536580872.800000	Cf3041579da0a	192.168.100.103	39139	129.102.127.130	23	tcp	-	-	-	-	S0	-	-	0	S	1	40	0	0	-   Malicious   PartOfAHorizontalPortScan
+1536580873.600000	C0288c6b789ef	192.168.100.103	32977	68.45.73.103	23	tcp	-	-	-	-	S0	-	-	0	S	1	40	0	0	-   Malicious   PartOfAHorizontalPortScan
+1536580874.400000	C1555963892a7	192.168.100.103	42909	185.244.25.235	6667	tcp	irc	2.002	52	160	SF	-	-	0	ShAdDafF	6	372	5	428	-   Malicious   C&C-HeartBeat
+1536580875.200000	C996b05c22d3f	192.168.100.103	39969	185.244.25.235	6667	tcp	irc	2.002	52	160	SF	-	-	0	ShAdDafF	6	372	5	428	-   Malicious   C&C-HeartBeat
+1536580876.000000	C7732a1320b9d	192.168.100.103	32768	185.244.25.235	6667	tcp	irc	2.002	52	160	SF	-	-	0	ShAdDafF	6	372	5	428	-   Malicious   C&C-HeartBeat
+1536580876.800000	C4f7dc0236e49	192.168.100.103	51546	185.244.25.235	6667	tcp	irc	2.002	52	160	SF	-	-	0	ShAdDafF	6	372	5	428	-   Malicious   C&C-HeartBeat
+1536580877.600000	Cc76e98b81c66	192.168.100.103	55044	185.244.25.235	6667	tcp	irc	2.002	52	160	SF	-	-	0	ShAdDafF	6	372	5	428	-   Malicious   C&C-HeartBeat
+1536580878.400000	Cfd06fc173498	192.168.100.103	34897	185.244.25.235	6667	tcp	irc	2.002	52	160	SF	-	-	0	ShAdDafF	6	372	5	428	-   Malicious   C&C-HeartBeat
+1536580879.200000	C166b250e7b34	192.168.100.103	57028	192.168.100.1	53	udp	dns	0.031	34	50	SF	-	-	0	Dd	1	62	1	78	-   Benign   -
+1536580880.000000	Cdbc5a098d691	192.168.100.103	54046	192.168.100.1	53	udp	dns	0.031	34	50	SF	-	-	0	Dd	1	62	1	78	-   Benign   -
+1536580880.800000	C4753816b2332	192.168.100.103	59815	192.168.100.1	53	udp	dns	0.031	34	50	SF	-	-	0	Dd	1	62	1	78	-   Benign   -
+1536580881.600000	C083bcdff5a1c	192.168.100.103	57079	192.168.100.1	53	udp	dns	0.031	34	50	SF	-	-	0	Dd	1	62	1	78	-   Benign   -
+1536580882.400000	C75baa4946d15	192.168.100.103	32788	192.168.100.1	53	udp	dns	0.031	34	50	SF	-	-	0	Dd	1	62	1	78	-   Benign   -
+1536580883.200000	C156e07fa22f7	192.168.100.103	34361	192.168.100.1	53	udp	dns	0.031	34	50	SF	-	-	0	Dd	1	62	1	78	-   Benign   -
+#close	2018-09-10-12-02-00

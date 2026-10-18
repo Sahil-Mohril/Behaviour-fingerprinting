@@ -1,0 +1,22 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      # dataset/log files (CIC CSVs, Cowrie/OpenCanary JSON, Zeek conn.log); read-only
+      - ${HFP_DATA_DIR:-../data}:/data:ro
+      - hfp-state:/state
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  hfp-state:

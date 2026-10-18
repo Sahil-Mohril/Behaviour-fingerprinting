@@ -1,0 +1,27 @@
+# Python
+backend/.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+
+# runtime state (SQLite DB, scaler, catalog cache)
+backend/state/
+*.db
+*.db-wal
+*.db-shm
+*.joblib
+
+# frontend
+frontend/node_modules/
+frontend/dist/
+
+# datasets and logs are never committed (they live in ../data or $HFP_DATA_DIR)
+data/
+*.pcap
+*.pcapng
+*.parquet
+*.zip
+*.csv
+*.log
+*.json.gz
+!backend/tests/fixtures/*

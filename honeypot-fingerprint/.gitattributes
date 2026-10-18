@@ -1,0 +1,3 @@
+# fixtures must keep the exact on-disk format of the real tools (LF line endings)
+backend/tests/fixtures/* text eol=lf
+*.sh text eol=lf
