@@ -1,0 +1,17 @@
+\begin{tikzpicture}[x=11mm,y=7mm,font=\scriptsize]
+\fill[cmblue!58!white] (0,1) rectangle ++(1,1);
+\node[text=white, align=center] at (0.5,1.5) {TP~7};
+\fill[cmblue!50!white] (1,1) rectangle ++(1,1);
+\node[text=white, align=center] at (1.5,1.5) {FN~6};
+\node[anchor=east] at (-0.05,1.5) {Attack};
+\node[anchor=south] at (0.5,2.05) {Attack};
+\fill[cmblue!8!white] (0,0) rectangle ++(1,1);
+\node[text=black, align=center] at (0.5,0.5) {FP~4};
+\fill[cmblue!100!white] (1,0) rectangle ++(1,1);
+\node[text=white, align=center] at (1.5,0.5) {TN~960};
+\node[anchor=east] at (-0.05,0.5) {Benign};
+\node[anchor=south] at (1.5,2.05) {Benign};
+\draw[black!25] (0,0) grid (2,2);
+\node[font=\tiny] at (1,2.75) {Predicted};
+\node[rotate=90, font=\tiny] at (-0.62,1) {True};
+\end{tikzpicture}

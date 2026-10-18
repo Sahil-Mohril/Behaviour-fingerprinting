@@ -1,0 +1,198 @@
+{
+ "windows_evaluated": 977,
+ "online": {
+  "confusion": {
+   "rows": [
+    "benign",
+    "ssh_bruteforce"
+   ],
+   "cols": [
+    "benign",
+    "ssh_bruteforce",
+    "unknown_anomaly",
+    "unmatched"
+   ],
+   "matrix": [
+    [
+     743,
+     0,
+     4,
+     217
+    ],
+    [
+     0,
+     7,
+     0,
+     6
+    ]
+   ]
+  },
+  "per_class": {
+   "benign": {
+    "precision": 1.0,
+    "recall": 0.771,
+    "f1": 0.871,
+    "support": 964
+   },
+   "ssh_bruteforce": {
+    "precision": 1.0,
+    "recall": 0.538,
+    "f1": 0.7,
+    "support": 13
+   }
+  },
+  "macro": {
+   "precision": 1.0,
+   "recall": 0.655,
+   "f1": 0.785
+  },
+  "accuracy": 0.768
+ },
+ "final": {
+  "confusion": {
+   "rows": [
+    "benign",
+    "ssh_bruteforce"
+   ],
+   "cols": [
+    "benign",
+    "ssh_bruteforce",
+    "unmatched"
+   ],
+   "matrix": [
+    [
+     964,
+     0,
+     0
+    ],
+    [
+     0,
+     12,
+     1
+    ]
+   ]
+  },
+  "per_class": {
+   "benign": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "support": 964
+   },
+   "ssh_bruteforce": {
+    "precision": 1.0,
+    "recall": 0.923,
+    "f1": 0.96,
+    "support": 13
+   }
+  },
+  "macro": {
+   "precision": 1.0,
+   "recall": 0.962,
+   "f1": 0.98
+  },
+  "accuracy": 0.999
+ },
+ "binary": {
+  "precision": 0.636,
+  "recall": 0.538,
+  "f1": 0.583,
+  "tp": 7,
+  "fp": 4,
+  "fn": 6,
+  "tn": 960
+ },
+ "mean_time_to_detect": 20.0,
+ "mean_time_to_rule": 17.5,
+ "campaigns": [
+  {
+   "campaign_id": "cicids2017_sample.csv:BENIGN",
+   "label": "BENIGN",
+   "behaviour": "benign",
+   "events": 2000,
+   "dropped": 0,
+   "n_ips": 600,
+   "time_to_detect": null,
+   "time_to_rule": null,
+   "fingerprints": [
+    "FP-0007",
+    "FP-0008",
+    "FP-0006"
+   ],
+   "parent_id": null
+  },
+  {
+   "campaign_id": "cicids2017_sample.csv:SSH-Patator#A",
+   "label": "SSH-Patator",
+   "behaviour": "ssh_bruteforce",
+   "events": 60,
+   "dropped": 0,
+   "n_ips": 1,
+   "time_to_detect": 35.0,
+   "time_to_rule": 30.0,
+   "fingerprints": [
+    "FP-0010"
+   ],
+   "parent_id": null
+  },
+  {
+   "campaign_id": "cicids2017_sample.csv:SSH-Patator#B",
+   "label": "SSH-Patator",
+   "behaviour": "ssh_bruteforce",
+   "events": 63,
+   "dropped": 58,
+   "n_ips": 1,
+   "time_to_detect": 5.0,
+   "time_to_rule": 5.0,
+   "fingerprints": [
+    "FP-0010"
+   ],
+   "parent_id": "cicids2017_sample.csv:SSH-Patator#A"
+  }
+ ],
+ "returning": {
+  "replays": 1,
+  "recognised": 1,
+  "alerted": 1,
+  "rate": 1.0,
+  "alert_rate": 1.0,
+  "details": [
+   {
+    "campaign_id": "cicids2017_sample.csv:SSH-Patator#B",
+    "parent_id": "cicids2017_sample.csv:SSH-Patator#A",
+    "recognised": true,
+    "returning_alert": true,
+    "shared_fingerprints": [
+     "FP-0010"
+    ],
+    "child_windows_on_parent_fp": 2
+   }
+  ]
+ },
+ "dropped_by_label": {
+  "ssh_bruteforce": 58
+ },
+ "category_names": {
+  "benign": "Normal / benign traffic",
+  "crawler": "Search-engine crawler",
+  "scraper": "Aggressive scraper",
+  "http_flood": "HTTP flood (L7 DoS/DDoS)",
+  "syn_flood": "SYN flood",
+  "udp_flood": "UDP flood / amplification",
+  "icmp_flood": "ICMP flood",
+  "slowloris": "Slowloris / low-and-slow",
+  "port_scan_fast": "Port scan (fast)",
+  "port_scan_slow": "Port scan (stealthy)",
+  "ssh_bruteforce": "SSH brute force",
+  "ftp_bruteforce": "FTP brute force",
+  "web_bruteforce": "Web login brute force",
+  "credential_stuffing": "Credential stuffing",
+  "post_login_shell": "Post-login shell activity",
+  "web_vuln_probe": "Web vuln probing",
+  "botnet_c2": "Botnet / C2 beaconing",
+  "infiltration": "Infiltration / exploit",
+  "malware_download": "Malware download",
+  "unknown_anomaly": "Unknown anomaly",
+  "unmatched": "Unclassified"
+ }
+}

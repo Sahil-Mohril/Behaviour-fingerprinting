@@ -1,0 +1,26 @@
+\begin{tikzpicture}[x=5.4mm,y=5.4mm,font=\tiny]
+\node[anchor=east] at (-0.1,1.5) {Benign};
+\fill[cmblue!79!white] (0,1) rectangle ++(1,1);
+\node[text=white] at (0.5,1.5) {743};
+\fill[white] (1,1) rectangle ++(1,1);
+\fill[cmblue!8!white] (2,1) rectangle ++(1,1);
+\node[text=black] at (2.5,1.5) {4};
+\fill[cmblue!29!white] (3,1) rectangle ++(1,1);
+\node[text=black] at (3.5,1.5) {217};
+\node[anchor=east] at (-0.1,0.5) {SSH b.f.};
+\fill[white] (0,0) rectangle ++(1,1);
+\fill[cmblue!58!white] (1,0) rectangle ++(1,1);
+\node[text=white] at (1.5,0.5) {7};
+\fill[white] (2,0) rectangle ++(1,1);
+\fill[cmblue!50!white] (3,0) rectangle ++(1,1);
+\node[text=white] at (3.5,0.5) {6};
+\draw[black!25, step=1] (0,0) grid (4,2);
+\draw[black, thick] (0,1) rectangle ++(1,1);
+\draw[black, thick] (1,0) rectangle ++(1,1);
+\node[anchor=west, rotate=60] at (0.35,2.1) {Benign};
+\node[anchor=west, rotate=60] at (1.35,2.1) {SSH b.f.};
+\node[anchor=west, rotate=60] at (2.35,2.1) {Unknown};
+\node[anchor=west, rotate=60] at (3.35,2.1) {Unclass.};
+\node[rotate=90, font=\scriptsize] at (-3.4,1) {True behaviour};
+\node[font=\scriptsize] at (2,-0.6) {Detected category};
+\end{tikzpicture}

@@ -1,0 +1,21 @@
+\begin{tikzpicture}[x=5.4mm,y=5.4mm,font=\tiny]
+\node[anchor=east] at (-0.1,1.5) {Benign};
+\fill[cmblue!100!white] (0,1) rectangle ++(1,1);
+\node[text=white] at (0.5,1.5) {964};
+\fill[white] (1,1) rectangle ++(1,1);
+\fill[white] (2,1) rectangle ++(1,1);
+\node[anchor=east] at (-0.1,0.5) {SSH b.f.};
+\fill[white] (0,0) rectangle ++(1,1);
+\fill[cmblue!93!white] (1,0) rectangle ++(1,1);
+\node[text=white] at (1.5,0.5) {12};
+\fill[cmblue!15!white] (2,0) rectangle ++(1,1);
+\node[text=black] at (2.5,0.5) {1};
+\draw[black!25, step=1] (0,0) grid (3,2);
+\draw[black, thick] (0,1) rectangle ++(1,1);
+\draw[black, thick] (1,0) rectangle ++(1,1);
+\node[anchor=west, rotate=60] at (0.35,2.1) {Benign};
+\node[anchor=west, rotate=60] at (1.35,2.1) {SSH b.f.};
+\node[anchor=west, rotate=60] at (2.35,2.1) {Unclass.};
+\node[rotate=90, font=\scriptsize] at (-3.4,1) {True behaviour};
+\node[font=\scriptsize] at (1.5,-0.6) {Detected category};
+\end{tikzpicture}

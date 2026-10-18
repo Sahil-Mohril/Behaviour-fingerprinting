@@ -20,6 +20,8 @@
 \definecolor{cAttack}{HTML}{2A78D6}
 \definecolor{cUnknown}{HTML}{E34948}
 \definecolor{cRule}{HTML}{0CA30C}
+\definecolor{cmblue}{HTML}{1C5CAB}
+\newcommand{\shot}[2][]{\includegraphics[width=\linewidth,#1]{#2}}
 
 \newcommand{\cmark}{$\bullet$}
 \newcommand{\pmark}{$\circ$}
@@ -37,7 +39,7 @@
 \maketitle
 
 \begin{abstract}
-Honeypots are increasingly used as the sensing layer of adaptive defence, but most systems either profile attackers without acting on the result or act on flow-level signatures without a behavioural model. We present an end-to-end prototype that closes this loop on recorded telemetry. Four input adapters map CICFlowMeter CSVs (CIC-IDS2017, CIC-DDoS2019), Cowrie and OpenCanary JSON logs and Zeek \texttt{conn.log} files onto one event schema. A label-free view of that schema feeds every detection component, and only the evaluator reads dataset labels. A deterministic replay engine streams slices of these sources at 1--100$\times$. It can split one attack class in time and replay its second part from consistently remapped IP addresses to emulate a returning attacker. Sliding-window extraction computes 49 flow-aware features per source IP and per group of sparse sources; features that a source cannot observe are left undefined rather than set to zero. HDBSCAN discovers behaviour clusters without labels and turns them into fingerprints: a centroid, a MinHash signature over categorical traits, per-episode source sets and an explainable rule-based category. Live windows are matched by a weighted sum of anchored cosine similarity and per-family Jaccard containment. A new episode of a fingerprint whose sources are disjoint from all earlier episodes raises a \emph{returning-behaviour} alert. Matches generate nftables, iptables and Suricata rules with a suggested--approved--active--expired lifecycle, an allowlist invariant and an in-app simulated firewall. We evaluate the prototype on format-faithful sample files (20--50 records per source, looped by the replay engine), not on the full datasets. Under that caveat, the returning attacker was recognised in 40 of 42 replays (mean similarity 0.955), each with an alert about 6.8~s after its return. A mixed eight-source replay reached an attack-versus-benign F1 of 0.926 at precision 1.0. The pipeline processed 9,187 events/s and the simulated firewall 108,849 events/s, and no allowlisted event was ever dropped. The rule-based categoriser labelled only 3 of 7 returning classes correctly, which we trace to rate thresholds invalidated by time compression. All numbers are feasibility evidence, and one script regenerates them on the real datasets.
+Honeypots are increasingly used as the sensing layer of adaptive defence, but most systems either profile attackers without acting on the result or act on flow-level signatures without a behavioural model. We present an end-to-end system, deployed as a containerised web application, that closes this loop on recorded telemetry. Four input adapters map CICFlowMeter CSVs (CIC-IDS2017, CIC-DDoS2019), Cowrie and OpenCanary JSON logs and Zeek \texttt{conn.log} files onto one event schema. A label-free view of that schema feeds every detection component, and only the evaluator reads dataset labels. A deterministic replay engine streams slices of these sources at 1--100$\times$. It can split one attack class in time and replay its second part from consistently remapped IP addresses to emulate a returning attacker. Sliding-window extraction computes 49 flow-aware features per source IP and per group of sparse sources; features that a source cannot observe are left undefined rather than set to zero. HDBSCAN discovers behaviour clusters without labels and turns them into fingerprints: a centroid, a MinHash signature over categorical traits, per-episode source sets and an explainable rule-based category. Live windows are matched by a weighted sum of anchored cosine similarity and per-family Jaccard containment. A new episode of a fingerprint whose sources are disjoint from all earlier episodes raises a \emph{returning-behaviour} alert. Matches generate nftables, iptables and Suricata rules with a suggested--approved--active--expired lifecycle, an allowlist invariant and an in-app simulated firewall. We evaluate the system on format-faithful sample files (20--50 records per source, looped by the replay engine), not on the full datasets, and report results measured in the running web application as well as in a headless harness. In the application, the scripted demonstration recognised the returning SSH brute-force attacker from a new address within one 5~s hop (similarity 0.938) and the auto-applied rule dropped 58 of its 63 returning events. An eight-source mixed replay under automatic enforcement produced 805 labelled windows with attack-versus-benign precision 1.000, recall 0.796 and F1 0.886, and a per-behaviour macro F1 of 0.458 online and 0.995 after clustering; confusion matrices show that online errors are attack windows flagged as \emph{unknown anomaly} or \emph{unclassified} before their fingerprint exists, never confusions between attack classes. In the headless sweep the returning attacker was recognised in 40 of 42 replays (mean similarity 0.955), with an alert about 6.8~s after its return. The pipeline processed 9,187 events/s and the simulated firewall 108,849 events/s, and no allowlisted event was ever dropped. The rule-based categoriser labelled only 3 of 7 returning classes correctly, which we trace to rate thresholds invalidated by time compression. All numbers are feasibility evidence, and two scripts regenerate them on the real datasets.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -45,33 +47,36 @@ Honeypot, behavioural fingerprinting, attacker profiling, HDBSCAN, MinHash, Isol
 \end{IEEEkeywords}
 
 \section{Introduction}
-A honeypot has no legitimate users, so every contact with it is suspect, which removes at the source the false-positive problem of in-line anomaly detection~\cite{spitzner2002,axelsson2000}. Over two decades the field has moved from single emulated hosts to hybrid honeynets, cloned decoys and LLM-assisted analysis~\cite{aseres2026,maraden2026,oliveira2026}. A recent review of 22 primary studies~\cite{review2026} draws four conclusions that frame this work. Deterministic rule layers carry most of the measured detection accuracy: in one ablation an LLM working alone fell from 94.23\% to 55.77\%~\cite{oliveira2026}. Behavioural descriptors such as frequency, duration, diversity and timing outlast payload signatures~\cite{mohril2026,savage2025,lim2026}. Realism matters more than interaction depth~\cite{maraden2026,zhang2023}. And evaluation is fragmented by small samples, labels derived from the system under test and missing detection rates~\cite{review2026}.
+A honeypot has no legitimate users, so every contact with it is suspect, which sidesteps much of the false-positive problem that dominates in-line anomaly detection~\cite{moric2025,qurbonaliyeva2024}. The field has moved from single emulated hosts to hybrid honeynets, cloned decoys, adaptive shells and LLM-generated interaction~\cite{mahija2025,aseres2026,maraden2026,sladic2024,wang2024,gazdar2025}, and machine learning is now routinely applied to the data they collect~\cite{lanz2025,oliveira2026}. Four findings from recent work frame this paper. Deterministic rule layers carry most of the measured detection accuracy: in one ablation an LLM working alone fell from 94.23\% to 55.77\%~\cite{oliveira2026}. Behavioural descriptors such as frequency, duration, diversity and timing outlast payload signatures~\cite{savage2025,lim2026,beltran2026}. Realism matters more than interaction depth~\cite{maraden2026,zhang2023}. And evaluation is fragmented by small samples, labels derived from the system under test and missing detection rates~\cite{aseres2026,oliveira2026,balogh2025}.
 
-The review's capability matrix also shows a division of labour. Deception-focused work makes decoys convincing but leaves analysis to people. Profiling work characterises behaviour but rarely acts on it. Response work acts quickly, but on flow- or signature-level inputs instead of behavioural clusters. Only proposals such as IBAF~\cite{mohril2026} and AHIH~\cite{aseres2026} describe the full loop from telemetry to enforcement, and the one evaluated end-to-end framework used public datasets~\cite{beltran2026}.
+Existing systems also show a division of labour. Deception-focused work makes decoys convincing but leaves analysis to people. Profiling work characterises behaviour but rarely acts on it. Response work acts quickly, but on flow- or signature-level inputs instead of behavioural clusters. Only proposals such as AHIH~\cite{aseres2026} and autonomous deception frameworks~\cite{shahzad2026} describe the full loop from telemetry to enforcement, and the one evaluated end-to-end framework used public datasets~\cite{beltran2026}.
 
-This paper describes and evaluates a working prototype of that loop. It operates on recorded honeypot logs and labelled flow datasets instead of live traffic, which makes every run reproducible and keeps ground truth independent of the detector. Our contributions are:
+This paper describes and evaluates a working implementation of that loop, delivered as a web application for a security operations centre (SOC). It operates on recorded honeypot logs and labelled flow datasets instead of live traffic, which makes every run reproducible and keeps ground truth independent of the detector. No packet is ever sent: attack traffic exists only as replayed records, and firewall rules are produced as text and enforced only in an in-application simulation. Our contributions are:
 \begin{enumerate}
 \item A \textbf{label-isolated ingestion layer}: adapters for four real formats, a single dataset-label-to-behaviour table that marks behaviours with no labelled source, and a typed boundary that keeps labels out of detection (Section~\ref{sec:data}).
 \item A \textbf{deterministic replay engine} with a \emph{returning-attacker} mode that splits an attack class in time and replays its second part from consistently remapped addresses with timestamps shifted to the present (Section~\ref{sec:replay}).
 \item \textbf{Flow-aware behavioural fingerprinting}: 49 features with explicit missing-value semantics, HDBSCAN clustering, MinHash trait signatures, an explainable rule-based categoriser and an anchored cosine-plus-containment similarity (Sections~\ref{sec:features}--\ref{sec:fingerprint}).
 \item \textbf{Episode-based returning-behaviour detection} tied to rule generation in three formats, with a staged lifecycle, an allowlist invariant and a simulated firewall that shows the effect of enforcement (Sections~\ref{sec:detect}--\ref{sec:rules}).
-\item A \textbf{reproducible evaluation} with ablations, throughput measurements and an explicit list of what was not measured (Sections~\ref{sec:eval}--\ref{sec:discussion}).
+\item A \textbf{SOC web application} (FastAPI, React, Docker Compose) that exposes replay control, live telemetry, a fingerprint explorer, explained alerts, a rule workbench and an evaluation view with confusion matrices (Section~\ref{sec:impl}).
+\item A \textbf{reproducible evaluation} measured both in the running application and in a headless harness, with confusion matrices, ablations, throughput measurements and an explicit list of what was not measured (Sections~\ref{sec:eval}--\ref{sec:discussion}).
 \end{enumerate}
 
 \section{Related Work}\label{sec:related}
-\textit{Deception platforms.} DYNAMIT clusters production hosts with K-Medoids over a hybrid Manhattan--Jaccard distance and clones real hosts as containerised decoys; its decoys returned the same service sets as their templates under an aggressive Nmap scan, while a stock T-Pot exposed more than 100 conflicting services~\cite{maraden2026}. Zhang et al.\ identified 589 Kippo and Cowrie honeypots among 30,000 Shodan SSH hosts~\cite{zhang2023}. Savage et al.\ ran high-, low- and no-deception SSH hosts side by side and found that a few addresses dominate session volume~\cite{savage2025}. Our prototype does not contribute to decoy realism; it consumes what such decoys log.
+\textit{Deception platforms and honeypot design.} Recent surveys trace honeypots from rudimentary traps to AI-driven deception systems~\cite{mahija2025,javadpour2024} and review how machine learning is applied to IoT honeypots~\cite{lanz2025}. Aseres et al.\ review fifteen years of high-interaction honeypots and propose the HONEYLIFECYCLE and Adaptive HIH frameworks~\cite{aseres2026}. Mori\'c et al.\ compare seven open-source honeypots on nine criteria in a segmented testbed~\cite{moric2025}, and Qurbonaliyeva and Abduraxmanova analyse how decoys attract and hold attackers, recommending the DMZ as the default placement~\cite{qurbonaliyeva2024}. Dynamic honeynets configure themselves to the surrounding network: Zhang and Shi build Honeyd profiles from K-Means centroids of scanned hosts~\cite{zhangshi2023}, Bartwal et al.\ launch behavioural honeypots through a SOAR engine~\cite{bartwal2022}, and DYNAMIT clones real hosts chosen by K-Medoids over a hybrid Manhattan--Jaccard distance; its decoys returned the same service sets as their templates under an aggressive Nmap scan, while a stock T-Pot exposed more than 100 conflicting services~\cite{maraden2026}. Anwar et al.\ allocate honeypots on an attack graph under uncertainty~\cite{anwar2022}, and Silaen et al.\ capture post-login behaviour in MS~SQL honeypots~\cite{silaen2025}. Generative and adaptive decoys replace scripted responses: shelLM, HoneyGPT, HoneyLLM and the LLM honeypot of Otal and Canbaz produce shell output with language models~\cite{sladic2024,wang2024,guan2024,otal2024}, while HoneyIoT and TangleNet adapt their responses with reinforcement learning~\cite{guan2023,gazdar2025}. Zhang et al.\ show the converse risk, identifying 589 Kippo and Cowrie honeypots among 30,000 Shodan SSH hosts by multi-fingerprinting~\cite{zhang2023}. Our system does not contribute to decoy realism; it consumes what such decoys log.
 
-\textit{Behavioural profiling.} IBAF formalises session frequency, authentication rate, normalised command entropy, active days and ATT\&CK vectors, clusters actors with K-Means and validates clusters against IoCs~\cite{mohril2026}. Lim and Hobert reduce about 112,000 SSH sessions to 176 patterns and 18 Ward clusters, 7 of which survive IoC validation~\cite{lim2026}. Balogh et al.\ score attack patterns out of 420 and separate human CTF players (122 points on average) from Internet bots (41)~\cite{balogh2025}. Beltr\'an-L\'opez et al.\ aggregate CICFlowMeter flows per attacker into 90 features and infer 24 ontology attributes with F1-macro between 0.63 and 0.999~\cite{beltran2026}. Earlier work showed that statistical fingerprints of packet size and timing expose tunnels inside allowed protocols~\cite{dusi2009}, and that support- and lift-based profiles identify individual users from sessions~\cite{yang2010}. We adopt the flow-aggregation view of~\cite{beltran2026} and the log-transform-and-standardise practice of~\cite{savage2025,mohril2026}, but cluster with HDBSCAN~\cite{campello2013} because the densities of the behaviours we observe differ by orders of magnitude.
+\textit{Behavioural profiling and attribution.} Savage et al.\ ran high-, low- and no-deception SSH hosts side by side and found that a few addresses dominate session volume~\cite{savage2025}. Lim and Hobert reduce about 112,000 SSH sessions to 176 patterns and 18 Ward clusters, 7 of which survive IoC validation~\cite{lim2026}. Balogh et al.\ score attack patterns out of 420 and separate human CTF players (122 points on average) from Internet bots (41)~\cite{balogh2025}. Beltr\'an-L\'opez et al.\ aggregate CICFlowMeter flows per attacker into 90 features and infer 24 ontology attributes with F1-macro between 0.63 and 0.999~\cite{beltran2026}. Lanka et al.\ apply AI-driven analysis to honeypot data~\cite{lanka2024}, and Shahzad et al.\ describe an autonomous deception framework with behaviour-based attribution~\cite{shahzad2026}. We adopt the flow-aggregation view of~\cite{beltran2026} and the log-transform practice of~\cite{savage2025}, but cluster with HDBSCAN because the densities of the behaviours we observe differ by orders of magnitude, and we make \emph{re-identification after address rotation} an explicit, measured task.
 
-\textit{Learning and LLM analysis.} The grounded honeypot--LLM pipeline of Oliveira et al.\ reached 94.23\% accuracy on 52 observations, but its rules alone matched that figure~\cite{oliveira2026}. The Double-DQN IPS of~\cite{mallik2026} reports 1.8~ms per-flow inference, and the dual-machine IPS of~\cite{panwar} stages blocks behind honeypot confirmation and canary rollback. Following the ``deterministic first'' finding, our decisions are rule- and similarity-based, with an Isolation Forest~\cite{liu2008} only proposing candidate fingerprints.
+\textit{Learned detection and LLM analysis.} Aparna et al.\ pair an HTTP/SSH honeypot with a CNN--LSTM detector trained on CIC-IDS2017 and report about 95.6\% accuracy~\cite{aparna2026}, a benchmark score rather than a measurement on honeypot data. Pashaei et al.\ train an early IDS for industrial honeypots with adversarial SARSA and report an accuracy of about 0.99~\cite{pashaei2022}. The grounded honeypot--LLM pipeline of Oliveira et al.\ reached 94.23\% accuracy on 52 observations, but its deterministic rules alone matched that figure~\cite{oliveira2026}, and Beekeeper uses LLM feedback to speed up honeypot analysis~\cite{ilg2025}. Following the ``deterministic first'' evidence, our decisions are rule- and similarity-based; an Isolation Forest only proposes candidate fingerprints, and HDBSCAN only proposes structure.
 
-\textit{Rule generation and enforcement.} Saboori et al.\ mined Snort logs with Apriori and installed block rules above 70\% support~\cite{saboori2010}. Pozo et al.\ diagnose inconsistent firewall rules on a platform-independent model in under 70~ms for 5,000 rules~\cite{pozo2009}. IBAF couples cluster-bound rules with SDN enforcement and Zero-Trust scores~\cite{mohril2026}. We generate rules per fingerprint episode, render them for three platforms and enforce them only in a simulated firewall.
+\textit{Datasets and evaluation.} Evaluation remains the weakest link of this literature: the LLM pipeline rests on 52 observations whose labels share the rule vocabulary of the detector~\cite{oliveira2026}, the CTF study on 22 attackers~\cite{balogh2025}, and benchmark results such as~\cite{aparna2026,beltran2026} come from datasets that contain no deception traffic; Aseres et al.\ also note the absence of performance benchmarks for high-interaction honeypots~\cite{aseres2026}. These findings motivate two design choices: the evaluator is the only component that reads labels, and every label passes through one auditable mapping table.
 
-Table~\ref{tab:capability} places this work on the five axes of~\cite{review2026}, using the review's ratings for the other systems.
+\textit{Rule generation and enforcement.} The Double-DQN IPS of~\cite{mallik2026} reports 1.8~ms per-flow inference, SAFIRE feeds edge honeypots into an AI-based IDS whose decisions SDN carries out~\cite{slimani2026}. We generate rules per fingerprint episode, render them for three platforms, stage them through an approval lifecycle and enforce them only in a simulated firewall.
+
+Table~\ref{tab:capability} compares this work with representative systems on five functional axes: deception platform, attraction and anti-fingerprinting, profiling, learning, and response.
 
 \begin{table}[t]
 \centering
-\caption{Coverage of the review's functional axes~\cite{review2026}}
+\caption{Coverage of five functional axes}
 \label{tab:capability}
 \footnotesize
 \setlength{\tabcolsep}{3pt}
@@ -80,21 +85,21 @@ Table~\ref{tab:capability} places this work on the five axes of~\cite{review2026
 \toprule
 System & A1 & A2 & A3 & A4 & A5 & Validation \\
 \midrule
-IDH~\cite{sibi2020} & \cmark & \pmark & \pmark & \pmark & \cmark & Ransomware samples \\
 DYNAMIT~\cite{maraden2026} & \cmark & \cmark & \pmark & \pmark & \nmark & Synthetic nets \\
+CNN--LSTM IDS~\cite{aparna2026} & \pmark & \nmark & \nmark & \cmark & \pmark & CIC-IDS2017 \\
 Honeypot--LLM~\cite{oliveira2026} & \pmark & \nmark & \cmark & \cmark & \pmark & 52 observations \\
 Real-time profiling~\cite{balogh2025} & \cmark & \nmark & \cmark & \pmark & \nmark & CTF, Internet \\
-IBAF~\cite{mohril2026} & \cmark & \pmark & \cmark & \cmark & \cmark & Proposed protocol \\
+ICS early IDS~\cite{pashaei2022} & \cmark & \nmark & \nmark & \cmark & \nmark & ICS datasets, PLCs \\
 Deception levels~\cite{savage2025} & \cmark & \pmark & \cmark & \pmark & \nmark & 3 live hosts \\
 Threat-actor ontology~\cite{beltran2026} & \pmark & \pmark & \cmark & \cmark & \pmark & Public datasets \\
-\textbf{This work} & \pmark & \nmark & \cmark & \cmark & \cmark & Replayed samples \\
+\textbf{This work} & \pmark & \nmark & \cmark & \cmark & \cmark & Replayed samples, web app \\
 \bottomrule
 \end{tabular}}\\[2pt]
 \raggedright\scriptsize A1 deception platform; A2 attraction/anti-fingerprinting; A3 profiling; A4 learning; A5 response. \cmark\ substantial, \pmark\ partial, \nmark\ not addressed.
 \end{table}
 
 \section{System Overview}\label{sec:overview}
-Fig.~\ref{fig:arch} shows the pipeline, aligned with the six-layer reference architecture of~\cite{review2026}. Files in a data folder are indexed by a catalog (labels, counts, time ranges). The replay engine streams selected slices through decoy services that fill in response details. A simulated firewall drops events that match active rules, and the capture layer persists events to SQLite and streams batched updates to a dashboard over WebSocket. Accepted events cross into the detection pipeline as label-free \texttt{ObservedEvent} records. Feature extraction, matching, clustering, alerting and rule generation run in one synchronous, deterministic orchestrator. A background thread drives it in real time, while tests and the experiment harness call it directly. The evaluator alone receives full events with labels.
+Fig.~\ref{fig:arch} shows the pipeline, organised in six layers from data source to enforcement. Files in a data folder are indexed by a catalog (labels, counts, time ranges). The replay engine streams selected slices through decoy services that fill in response details. A simulated firewall drops events that match active rules, and the capture layer persists events to SQLite and streams batched updates to a dashboard over WebSocket. Accepted events cross into the detection pipeline as label-free \texttt{ObservedEvent} records. Feature extraction, matching, clustering, alerting and rule generation run in one synchronous, deterministic orchestrator. A background thread drives it in real time, while tests and the experiment harness call it directly. The evaluator alone receives full events with labels.
 
 \begin{figure*}[t]
 \centering
@@ -124,7 +129,7 @@ Fig.~\ref{fig:arch} shows the pipeline, aligned with the six-layer reference arc
 \draw[arr] (rg.east) -- ++(2.5mm,0) |- node[pos=0.25, right, font=\tiny, align=left]{active\\rules} (fw.east);
 \draw[arr, dashed] (mt.south) -- ++(0,-3mm) -| node[pos=0.25, below, font=\tiny]{window results} ([xshift=-5mm]ev.west) -- (ev.west);
 \end{tikzpicture}
-\caption{Architecture. In the terms of~\cite{review2026}, adapters and replay stand in for L1--L2, feature extraction for L3, HDBSCAN and the fingerprint store for L4, matching and alerts for L5, and rules with the simulated firewall for L6. Dashed edges carry ground truth and window results to the evaluator only.}
+\caption{Architecture. Adapters and replay stand in for the deception and collection layers (L1--L2), feature extraction for L3, HDBSCAN and the fingerprint store for L4, matching and alerts for L5, and rules with the simulated firewall for L6. Dashed edges carry ground truth and window results to the evaluator only.}
 \label{fig:arch}
 \end{figure*}
 
@@ -133,10 +138,10 @@ Fig.~\ref{fig:arch} shows the pipeline, aligned with the six-layer reference arc
 An event is $e=(t, \mathit{src}, \mathit{dst}, \mathit{svc}, \mathit{proto}, \mathbf{f}, \mathbf{h}, \mathbf{a}, \mathbf{c}, y, \kappa)$. It holds timestamps and endpoints; flow totals $\mathbf{f}$ (duration, forward and backward packets, bytes, SYN/ACK/FIN/RST/PSH counts); HTTP fields $\mathbf{h}$ (method, path, user agent, status); authentication fields $\mathbf{a}$ (username, password, attempt, outcome); and content $\mathbf{c}$ (command, payload snippet). The ground-truth label $y$ and campaign identifier $\kappa$ are kept verbatim from the source. Any field a source does not provide is \texttt{None}. The detection pipeline receives a separate type, \texttt{ObservedEvent}, which has no $y$ or $\kappa$ field, so a component cannot read a label even by mistake; a unit test checks this.
 
 \subsection{Adapters}
-\textit{CICFlowMeter CSV} (CIC-IDS2017~\cite{sharafaldin2018}, CIC-DDoS2019~\cite{sharafaldin2019}). Each row, a bidirectional flow, becomes one flow event. Headers are matched after stripping whitespace, against both the 2017 and the newer CICFlowMeter spellings. \texttt{Infinity} and \texttt{NaN} become missing. CIC-IDS2017 writes afternoon times on a 12-hour clock without AM/PM, so hours 1--7 are shifted by 12~h. Minute-resolution timestamps are spread evenly across the minute in file order. The variant without source IP and timestamp columns is rejected with an explanatory error.
-\textit{Cowrie}~\cite{cowrie}. Connect, login success and failure, command, download and session-close events are mapped, and source ports are carried from each session's connect event to its later events.
-\textit{OpenCanary}~\cite{opencanary}. Port-scan log types (5001--5005) become probe events whose flags are taken from the key set of the kernel log, and SSH, FTP, HTTP, MySQL and other login types become authentication attempts with an unresolved outcome. Boot and system messages are ignored.
-\textit{Zeek conn.log}~\cite{paxson1999}. TSV with a \texttt{\#fields} header or JSON lines are accepted. Flag counts are derived from the connection \texttt{history} string. IoT-23 \texttt{conn.log.labeled} files~\cite{iot23}, whose last columns are joined by spaces, are split correctly, and their \texttt{detailed-label} becomes $y$.
+\textit{CICFlowMeter CSV} (CIC-IDS2017\footnote{\url{https://www.unb.ca/cic/datasets/ids-2017.html}}, CIC-DDoS2019\footnote{\url{https://www.unb.ca/cic/datasets/ddos-2019.html}}). Each row, a bidirectional flow, becomes one flow event. Headers are matched after stripping whitespace, against both the 2017 and the newer CICFlowMeter spellings. \texttt{Infinity} and \texttt{NaN} become missing. CIC-IDS2017 writes afternoon times on a 12-hour clock without AM/PM, so hours 1--7 are shifted by 12~h. Minute-resolution timestamps are spread evenly across the minute in file order. The variant without source IP and timestamp columns is rejected with an explanatory error.
+\textit{Cowrie}\footnote{\url{https://docs.cowrie.org/}}. Connect, login success and failure, command, download and session-close events are mapped, and source ports are carried from each session's connect event to its later events.
+\textit{OpenCanary}\footnote{\url{https://github.com/thinkst/opencanary}}. Port-scan log types (5001--5005) become probe events whose flags are taken from the key set of the kernel log, and SSH, FTP, HTTP, MySQL and other login types become authentication attempts with an unresolved outcome. Boot and system messages are ignored.
+\textit{Zeek conn.log}\footnote{\url{https://zeek.org/}}. TSV with a \texttt{\#fields} header or JSON lines are accepted. Flag counts are derived from the connection \texttt{history} string. IoT-23 \texttt{conn.log.labeled} files\footnote{\url{https://www.stratosphereips.org/datasets-iot23}}, whose last columns are joined by spaces, are split correctly, and their \texttt{detailed-label} becomes $y$.
 
 \subsection{Label mapping and coverage}
 One table maps normalised dataset labels to 19 behaviour keys (Table~\ref{tab:labels}). Behaviours that no supported labelled dataset provides are marked \emph{no data source} instead of being simulated. These are search-engine crawler, aggressive scraper, ICMP flood and stealthy port scan, plus credential stuffing and post-login shell activity, which appear in Cowrie and OpenCanary logs but carry no label; a replay can attach a label to such a slice explicitly.
@@ -202,7 +207,7 @@ A \emph{selection} names a source, optional label and time filters, an offset $o
 \end{algorithm}
 
 \section{Flow-Aware Behavioural Features}\label{sec:features}
-Every hop $H=5$~s, events in the trailing window $W=10$~s are grouped into \emph{entities}. A source IP becomes an entity when it has at least $n_{\min}=3$ events in the window or at least $4n_{\min}$ events in a 300~s history. Otherwise its events join a \emph{campaign-cluster group} keyed by traffic shape: protocol, service, well-known port and a request class (SYN-only, RST, established, authentication, HTTP page or sensitive path, command). Groups with at least three events form an entity. This is how spoofed SYN floods and distributed credential attacks, which produce one or two events per source, become visible. For each entity we compute the 49 features of Table~\ref{tab:features}. Count and rate features are transformed by $\tilde x=\log(1+x)$~\cite{savage2025,mohril2026}. Two examples:
+Every hop $H=5$~s, events in the trailing window $W=10$~s are grouped into \emph{entities}. A source IP becomes an entity when it has at least $n_{\min}=3$ events in the window or at least $4n_{\min}$ events in a 300~s history. Otherwise its events join a \emph{campaign-cluster group} keyed by traffic shape: protocol, service, well-known port and a request class (SYN-only, RST, established, authentication, HTTP page or sensitive path, command). Groups with at least three events form an entity. This is how spoofed SYN floods and distributed credential attacks, which produce one or two events per source, become visible. For each entity we compute the 49 features of Table~\ref{tab:features}. Count and rate features are transformed by $\tilde x=\log(1+x)$~\cite{savage2025}. Two examples:
 \begin{align}
 \mathrm{half\_open}&=|\mathcal T_{\mathrm{ho}}|\,/\,|\mathcal T|,\\
 \mathrm{reply}&=\log\big(1+\operatorname{mean}_{e\in\mathcal F}\, b_e/\max(1,f_e)\big),
@@ -245,7 +250,7 @@ z_j=\operatorname{clip}\!\Big(\frac{x_j-\mu^{\mathrm{base}}_j}{\max(\sigma^{\mat
 \end{equation}
 
 \subsection{Clustering: HDBSCAN rather than DBSCAN}
-Behaviour densities differ by orders of magnitude: a flood produces hundreds of near-identical windows, a scan a handful. DBSCAN's single $\varepsilon$ either merges sparse groups or splits dense ones. HDBSCAN~\cite{campello2013} keeps the most stable clusters across densities, needs no $k$, and labels leftovers as noise, which remain unassigned and may become anomaly candidates. Every 15~s, the clustering pass in Algorithm~\ref{alg:cluster} runs on unassigned windows only. Before clustering, it re-matches leftover windows against existing fingerprints, so that stragglers from an already-known behaviour do not seed a mixed cluster with a newer one. We found this failure mode during development.
+Behaviour densities differ by orders of magnitude: a flood produces hundreds of near-identical windows, a scan a handful. DBSCAN's single $\varepsilon$ either merges sparse groups or splits dense ones. HDBSCAN (the scikit-learn implementation) keeps the most stable clusters across densities, needs no $k$, and labels leftovers as noise, which remain unassigned and may become anomaly candidates. Every 15~s, the clustering pass in Algorithm~\ref{alg:cluster} runs on unassigned windows only. Before clustering, it re-matches leftover windows against existing fingerprints, so that stragglers from an already-known behaviour do not seed a mixed cluster with a newer one. We found this failure mode during development.
 
 \begin{algorithm}[t]
 \caption{Clustering pass and fingerprint placement}\label{alg:cluster}
@@ -270,7 +275,7 @@ Behaviour densities differ by orders of magnitude: a flood produces hundreds of 
 \end{algorithm}
 
 \subsection{Fingerprint model}
-A fingerprint stores a raw centroid and spread, token counts per family (at most 400), a 128-permutation MinHash signature, importance as $z$-scores against the baseline, source, ASN and country counters, a list of episodes, a version history and a hit timeline. MinHash uses $h_i(x)=\mathrm{SplitMix64}(\mathrm{hash}(x)\oplus s_i)$ with 128 random seeds~\cite{broder1997,steele2014}. An earlier variant of the form $(a x+b)\bmod p$, with 31-bit coefficients on 32-bit hashes, barely wraps modulo $p$, so it is close to a monotone map. It estimated a true Jaccard of $1/3$ as 0.16, and the SplitMix64 version passes the same test. Live matches nudge the centroid with an exponential moving average ($\alpha=0.02$) and add tokens, so fingerprints keep learning.
+A fingerprint stores a raw centroid and spread, token counts per family (at most 400), a 128-permutation MinHash signature, importance as $z$-scores against the baseline, source, ASN and country counters, a list of episodes, a version history and a hit timeline. MinHash uses $h_i(x)=\mathrm{SplitMix64}(\mathrm{hash}(x)\oplus s_i)$ with 128 random seeds. An earlier variant of the form $(a x+b)\bmod p$, with 31-bit coefficients on 32-bit hashes, barely wraps modulo $p$, so it is close to a monotone map. It estimated a true Jaccard of $1/3$ as 0.16, and the SplitMix64 version passes the same test. Live matches nudge the centroid with an exponential moving average ($\alpha=0.02$) and add tokens, so fingerprints keep learning.
 
 \subsection{Explainable categoriser}
 Each behaviour has one or more condition lists over centroid features (e.g.\ SYN flood: half-open ratio $\ge0.7$; packets/flow $\le3$; $\ge$20 flows/s; random source ports). The first condition, and any marked as required, must be observable and satisfied. Let $E$ be the observable conditions of a list with $n$ conditions and $M\subseteq E$ those satisfied. The confidence is
@@ -289,13 +294,13 @@ S(w,F)&=\frac{w_n\cos^{\!*}+w_c J^{\subset}}{w_n+w_c},\quad w_n=0.6,\ w_c=0.4.\l
 The constant \emph{anchor} dimension $\eta$ in (\ref{eq:cos}) makes low-energy, baseline-like vectors point along the anchor instead of in arbitrary directions, while strong behaviours are compared by the direction of their deviation. A replay at a different rate along the same direction therefore keeps a high score. A 10~s window holds a small sample of a fingerprint's traits, so plain Jaccard would penalise it for being small. We therefore use containment (\ref{eq:cont}), averaged over the token families $\Phi_w$ present in the window, and keep the MinHash Jaccard estimate for fingerprint-to-fingerprint comparison. When a window has no tokens, $S=\cos^{\!*}$. Every match records its explanation: per-feature contributions $z_{w,j}z_{F,j}/(\|\cdot\|\|\cdot\|)$, the most divergent features, containment per family, and known versus new tokens.
 
 \section{Detection, Episodes and Alerts}\label{sec:detect}
-Algorithm~\ref{alg:match} processes each hop. A window whose best active fingerprint scores $S\ge\theta=0.85$ is a match. Otherwise an Isolation Forest~\cite{liu2008}, trained on the baseline windows (150 trees, contamination 0.03), flags anomalies. An anomalous window joins a similar candidate fingerprint ($S\ge\theta-0.1$) or creates one, at most three per hop; candidates are promoted when a dense cluster confirms them, or by the user.
+Algorithm~\ref{alg:match} processes each hop. A window whose best active fingerprint scores $S\ge\theta=0.85$ is a match. Otherwise an Isolation Forest (scikit-learn), trained on the baseline windows (150 trees, contamination 0.03), flags anomalies. An anomalous window joins a similar candidate fingerprint ($S\ge\theta-0.1$) or creates one, at most three per hop; candidates are promoted when a dense cluster confirms them, or by the user.
 
 \textit{Episodes and returning behaviour.} An episode of $F$ is a maximal run of matches separated by less than a gap $g_e=25$~s. When a match opens a new episode $\epsilon_k$ with source set $I_k$,
 \begin{equation}
 \mathrm{returning}(\epsilon_k)\iff k>1\ \wedge\ I_k\cap\textstyle\bigcup_{j<k}I_j=\varnothing .\label{eq:ret}
 \end{equation}
-The behaviour is then known but its sources are not, which is the signature of an attacker who rotated infrastructure~\cite{mohril2026,savage2025}.
+The behaviour is then known but its sources are not, which is the signature of an attacker who rotated infrastructure~\cite{savage2025,lim2026}.
 
 \textit{Alerts} are keyed by (type, fingerprint, episode) and deduplicated within 120~s. The severity rank of an alert hit $n$ times is
 \begin{equation}
@@ -325,7 +330,7 @@ Returning alerts start at least at \textsc{high}. Categories that resolve to ben
 \end{algorithm}
 
 \section{Rule Generation and Simulated Enforcement}\label{sec:rules}
-Each (fingerprint, episode) gets at most one rule, whose kind depends on the category (Table~\ref{tab:strategy}). The rule records its fingerprint, reason, creation time, expiry and history. It is rendered as nftables (sets with timeouts, meters), iptables (ipset, \texttt{hashlimit}, \texttt{connlimit}) and Suricata (\texttt{threshold}, \texttt{http.uri} and \texttt{http.user\_agent} content). New sources of the same episode extend the rule instead of creating another. The lifecycle is \emph{suggested}$\to$\emph{approved}$\to$\emph{active}$\to$\emph{expired}/\emph{rejected}. In suggest mode an analyst approves rules; in auto mode they activate immediately, except unknown-anomaly rules, which are never auto-applied (cf.\ staged enforcement in~\cite{panwar}).
+Each (fingerprint, episode) gets at most one rule, whose kind depends on the category (Table~\ref{tab:strategy}). The rule records its fingerprint, reason, creation time, expiry and history. It is rendered as nftables (sets with timeouts, meters), iptables (ipset, \texttt{hashlimit}, \texttt{connlimit}) and Suricata (\texttt{threshold}, \texttt{http.uri} and \texttt{http.user\_agent} content). New sources of the same episode extend the rule instead of creating another. The lifecycle is \emph{suggested}$\to$\emph{approved}$\to$\emph{active}$\to$\emph{expired}/\emph{rejected}. In suggest mode an analyst approves rules; in auto mode they activate immediately, except unknown-anomaly rules, which are never auto-applied.
 
 \textit{Allowlist invariant.} Allowlisted CIDRs are removed from every rule target, including later user edits. The simulated firewall checks the allowlist before any rule, including rate limits, so an allowlisted source is never dropped. Rate rules use token buckets: with rate $\lambda$ and burst $2\lambda$, an event at time $t$ passes if $\min(2\lambda, b+\lambda(t-t'))\ge1$, where $b$ is the bucket level at the previous event $t'$. Dropped events are counted per rule and kept out of detection, which lets the dashboard show traffic before and after enforcement. No rule is ever executed on a host.
 
@@ -349,16 +354,183 @@ Unknown anomaly & IP block, suggest-only \\
 \end{tabular}}
 \end{table}
 
+\section{Implementation and Web Application}\label{sec:impl}
+\subsection{Software stack and deployment}
+The backend is a Python~3.11 FastAPI service. Events, fingerprints, alerts and rules are persisted in SQLite (write-ahead logging, buffered writes) through SQLModel, and NumPy, pandas and scikit-learn provide the numerical components. The detection pipeline runs in one background thread under a re-entrant lock, and a WebSocket pushes a batched state update to every client four times per second. The frontend is a React~18 single-page application built with Vite and Tailwind CSS, with Recharts for charts and a virtualised event table. One \texttt{docker compose up} starts both services: the backend on port 8000 with the data folder mounted read-only, and the frontend served by nginx on port 5173, which proxies \texttt{/api} and \texttt{/ws} to the backend. A non-Docker path runs the same two processes from a Python virtual environment and the Vite development server. The backend has 61 unit and integration tests (adapters, label table, replay determinism, features, fingerprinting, returning detection, rules and API), and the frontend has unit tests and a browser smoke test.
+
+\subsection{Safety properties}
+The application never opens a raw socket or sends a request to any host: replayed records are generated in-process from files, and the dashboard states this on every page. Rules are rendered as text for nftables, iptables and Suricata and can be exported, but no command is executed on the host; the \emph{enforcement} switch only changes the simulated firewall that filters the replayed stream. GeoIP and ASN data come from a bundled offline mock.
+
+\subsection{Views}
+The application has seven views, which also served as our measurement instrument (Section~\ref{sec:eval}).
+\begin{itemize}
+\item \emph{Replay control} (Fig.~\ref{fig:ui-replay}) lists the indexed data sources with their labels and mapped behaviours, and starts the scripted demonstration, a returning-attacker replay (source, class, split, part-A length, gap, speed) or a custom mix of slices. Pause, resume, stop and 1/10/100$\times$ speed apply at any time; the status bar shows replay time, effective speed, rule mode and the latest narration step.
+\item \emph{Live overview} (Fig.~\ref{fig:ui-overview}) shows key indicators, a stacked chart of events per second coloured by the behaviour family that their source was last detected as, rule activations, traffic dropped by the simulated firewall, source countries from the mock GeoIP, and a live event table.
+\item \emph{Fingerprint explorer} (Fig.~\ref{fig:ui-fp}) projects windows and fingerprint centroids with PCA or t-SNE, lists fingerprints by status and opens a detail panel with a radar profile, distinguishing features, traits, episodes and history; fingerprints can be renamed, promoted, dismissed, merged or split.
+\item \emph{Alerts} (Fig.~\ref{fig:ui-alerts}) is a filterable feed in which every alert expands into its explanation: the score breakdown of~(\ref{eq:score}), the strongest shared and most divergent features with their $z$-scores, containment per token family, and known versus new traits.
+\item \emph{Firewall rules} (Fig.~\ref{fig:ui-rules}) holds the rule lifecycle, the suggest/auto switch, per-format text with an editor, parameters, history, export and the allowlist.
+\item \emph{Evaluation} (Fig.~\ref{fig:ui-cm}) shows attack-versus-benign scores, a confusion matrix online and after clustering, per-behaviour scores, ground-truth campaigns with times to detect and to rule, and returning-attacker recognition.
+\item \emph{Settings} exposes every parameter of Sections~\ref{sec:features}--\ref{sec:rules}.
+\end{itemize}
+
+\begin{figure*}[t]
+\centering
+\shot[trim=446 648 0 0, clip]{figures/web_replay_running.png}
+\caption{Replay control during the scripted demonstration at 10$\times$ (application screenshot). The status bar narrates the current step; here the rule for the new SSH brute-force fingerprint has just been suggested. The returning-attacker panel configures source, class, split, part-A length, gap and speed.}
+\label{fig:ui-replay}
+\end{figure*}
+
+\begin{figure*}[t]
+\centering
+\shot[trim=446 446 0 0, clip]{figures/web_rules.png}
+\caption{Firewall rules after the demonstration (application screenshot): R-0001, suggested while the application was in suggest mode, with its nftables rendering and parameters (source, port 22, 900~s timeout, threshold 5 per 60~s); the episode rule R-0002 for the returning source is active. Allowlisted ranges are listed below the rules.}
+\label{fig:ui-rules}
+\end{figure*}
+
+\begin{figure*}[t]
+\centering
+\shot[trim=446 490 0 0, clip]{figures/web_overview.png}
+\caption{Live overview at the end of the scripted demonstration (application screenshot). Events per second are stacked by the detected family of their source: grey benign, red unknown-anomaly candidates during the baseline, green SSH brute force once the fingerprint exists. The dashed green line marks activation of rule R-0002 for the returning source, and the black dashed curve the events dropped by the simulated firewall from then on (58 of 2,123 in total).}
+\label{fig:ui-overview}
+\end{figure*}
+
+\begin{figure*}[t]
+\centering
+\shot[trim=446 619 0 0, clip]{figures/web_alerts.png}
+\caption{Alert feed with the returning-behaviour alert expanded (application screenshot). The explanation reports the combined score $0.938=0.6\times0.897+0.4\times1.000$, the strongest shared features (packets per flow, burstiness, SSH ratio) with live and fingerprint $z$-scores, the most divergent features, and trait containment per family. Below it are the earlier match, new-fingerprint and anomaly alerts with their hit counts.}
+\label{fig:ui-alerts}
+\end{figure*}
+
+\begin{figure}[t]
+\centering
+\shot[trim=497 576 50 245, clip]{figures/web_mixed_fingerprints.png}
+\caption{Fingerprint explorer after the mixed replay (PCA of window features; application screenshot). Diamonds are fingerprint centroids, dots are windows coloured by the family of their fingerprint; benign fingerprints cluster on the left, floods, scans, brute force, C2 and web probing separate to the right.}
+\label{fig:ui-fp}
+\end{figure}
+
 \section{Evaluation Methodology}\label{sec:eval}
-\textit{Data.} The full datasets were not available when we ran these experiments, so all results use the bundled sample files: two CICFlowMeter CSVs with real CIC-IDS2017 and CIC-DDoS2019 headers (50 and 40 rows), a Cowrie log (28 events), an OpenCanary log (27), an IoT-23-style labelled Zeek TSV (30) and a Zeek JSON log (20). They are \emph{synthesised} in each tool's real format, with labels drawn from the datasets' vocabularies, and the replay engine loops them. The review warns about such ground truth~\cite{review2026}: these labels are independent of the detector, but the data is small, synthetic and repetitive. Looping produces artefacts that real data would not have, such as repeated source ports and perfectly periodic timing.
+\textit{Research questions.} RQ1: Does a fingerprint learned from one part of an attack recognise the same behaviour when it returns from new addresses, and how quickly? RQ2: How accurately are windows classified into behaviours, online and after clustering, and where do errors fall? RQ3: What does automatic enforcement change? RQ4: Which design choices matter (ablations)? RQ5: What does the pipeline cost?
 
-\textit{Label provenance.} Window ground truth is the majority mapped label of the events a window contains. Cowrie and OpenCanary windows are unlabelled and excluded unless overridden.
+\textit{Data.} The full datasets were not available when we ran these experiments, so all results use the bundled sample files: two CICFlowMeter CSVs with real CIC-IDS2017 and CIC-DDoS2019 headers (50 and 40 rows), a Cowrie log (28 events), an OpenCanary log (27), an IoT-23-style labelled Zeek TSV (30) and a Zeek JSON log (20). They are \emph{synthesised} in each tool's real format, with labels drawn from the datasets' vocabularies, and the replay engine loops them. Such ground truth has known weaknesses~\cite{oliveira2026,aparna2026}: these labels are independent of the detector, but the data is small, synthetic and repetitive. Looping produces artefacts that real data would not have, such as repeated source ports and perfectly periodic timing.
 
-\textit{Metrics.} We report window-level precision, recall and F1 per behaviour, and attack-versus-benign, both \emph{online} (at detection time) and \emph{after clustering}, which credits windows that HDBSCAN later assigned to a fingerprint. We also report the mean time to detect (first event of a campaign to its first flagged window) and the time to rule; returning-attacker recognition, meaning that a part-B window matched a fingerprint that part-A windows built or matched; and alert raised, similarity, alert delay and the share of part-B events dropped. Finally we report throughput and per-stage latency.
+\textit{Two measurement paths.} \emph{(i) Web application.} Results W1--W2 were measured on the deployed Docker stack through its own interface. A script (\texttt{paper/tools/capture\_site.py}) resets the application, starts a scenario through the same REST endpoints that the Replay view calls, waits for the replay to finish, saves the JSON behind the Evaluation, Overview, Alerts and Rules views, and takes the screenshots shown in this paper with a headless browser. W1 is the scripted demonstration at 10$\times$. W2 is an eight-slice mix of all six files at 100$\times$ with the rule mode left on \emph{auto-apply}, as the demonstration leaves it. Running the capture twice gave identical numbers. \emph{(ii) Headless harness.} Experiments E1--E6 call the same pipeline directly, without persistence or the network layer, in the default \emph{suggest} mode, which allows sweeps and ablations (\texttt{python -m experiments.paper\_experiments}). Both paths use the same evaluator.
 
-\textit{Setup.} An Intel Core i5-1235U laptop with 15.7~GB RAM, Windows~11, Python 3.11.14, scikit-learn 1.5.2 and NumPy 2.1.3. Default settings throughout ($W=10$~s, $H=5$~s, $\theta=0.85$, $w_n{:}w_c=0.6{:}0.4$, HDBSCAN $m_{\mathrm{cs}}=5$, $m_{\mathrm{s}}=3$). Every run is deterministic, so variation comes only from the split fraction and the remap seed. \texttt{python -m experiments.paper\_experiments} regenerates all tables.
+\textit{Label provenance.} Window ground truth is the majority mapped label of the events a window contains. Cowrie and OpenCanary windows are unlabelled and excluded unless a replay overrides their label (W2 labels the Cowrie slice as SSH brute force and leaves OpenCanary unlabelled).
+
+\textit{Metrics.} Let $C\in\mathbb N^{K\times K'}$ be the confusion matrix whose entry $C_{ij}$ counts windows with true behaviour $i$ and detected category $j$; the detected categories add \emph{unknown anomaly} and \emph{unclassified} (no fingerprint matched) to the behaviours. For behaviour $i$,
+\begin{equation}
+P_i=\frac{C_{ii}}{\sum_k C_{ki}},\quad R_i=\frac{C_{ii}}{\sum_j C_{ij}},\quad F_i=\frac{2P_iR_i}{P_i+R_i},
+\end{equation}
+macro F1 is the mean of $F_i$ over true behaviours, and accuracy is $\sum_i C_{ii}/\sum_{ij}C_{ij}$. We report $C$ \emph{online} (the category of the window's best fingerprint at detection time) and \emph{after clustering}, which credits windows that HDBSCAN later assigned to a fingerprint, using that fingerprint's current category. For attack-versus-benign detection a window is predicted \emph{attack} when it matched a non-benign fingerprint or was flagged anomalous, which gives TP, FP, FN, TN, precision, recall and F1. We also report the time to detect (first event of a campaign to its first flagged window) and the time to rule (to its first rule); returning-attacker recognition, meaning that a part-B window matched a fingerprint that part-A windows built or matched; whether a returning alert was raised; the similarity and the alert delay; and the share of events dropped. Finally we report throughput and per-stage latency.
+
+\textit{Setup.} An Intel Core i5-1235U laptop with 15.7~GB RAM, Windows~11, Docker Desktop, Python 3.11.14, scikit-learn 1.5.2 and NumPy 2.1.3; screenshots were taken at 1440$\times$900 CSS pixels with device scale factor 2 in the light theme. Default settings throughout ($W=10$~s, $H=5$~s, $\theta=0.85$, $w_n{:}w_c=0.6{:}0.4$, HDBSCAN $m_{\mathrm{cs}}=5$, $m_{\mathrm{s}}=3$, clustering every 15~s). Every run is deterministic, so variation comes only from the split fraction and the remap seed.
 
 \section{Results}\label{sec:results}
+\subsection{W1: Scripted demonstration in the web application}
+The demonstration replays a benign CIC-IDS2017 background from 600 rotating addresses, part A of the SSH-Patator class from its original address, a switch to auto-apply, and part B from a remapped address (Figs.~\ref{fig:ui-replay}--\ref{fig:ui-alerts}). Of 2,123 events, 977 labelled windows were evaluated. The application learned 10 fingerprints, nine of them benign plus \emph{SSH brute force \#1} (FP-0010). The alert feed contains five alerts: two low-severity unknown-anomaly candidates raised on benign windows during the baseline, the new-fingerprint alert, a match alert (score 0.996) and the returning-behaviour alert (score 0.938, numeric cosine 0.897, containment 1.000). Part B was recognised in its first hop: its time to detect and to rule were both 5.0~s, against 35.0~s and 30.0~s for part A, which had to wait for clustering. The episode rule R-0002 was auto-applied and dropped 58 of the 63 part-B events (92\%); R-0001, suggested before the switch, stayed suggested. Table~\ref{tab:web} and Fig.~\ref{fig:cm-demo} summarise the scores. Precision is 0.636 because the four baseline anomaly windows are false positives; after clustering, 964 of 964 benign and 12 of 13 SSH windows are attributed correctly.
+
+\subsection{W2: Mixed replay under automatic enforcement}
+Eight slices from all six files ran overlapping for 236~s of replay time: 7,528 events, of which the simulated firewall dropped 243 (143 SSH brute force including the Cowrie slice, 48 port scan, 34 C2, 18 OpenCanary probes). The application formed 18 fingerprints: nine benign and nine non-benign covering C2, SSH brute force (two, from CIC flows and from Cowrie logins), UDP flood, SYN flood (two), fast port scan, web vulnerability probing (from the unlabelled OpenCanary log) and one unknown anomaly. It raised 17 alerts and generated nine rules, eight active and one unknown-anomaly rule left suggested, as the auto mode requires.
+
+Of 805 labelled windows, attack-versus-benign detection gave $\mathrm{TP}=39$, $\mathrm{FP}=0$, $\mathrm{FN}=10$, $\mathrm{TN}=756$: precision 1.000, recall 0.796, F1 0.886 (Table~\ref{tab:web}). Fig.~\ref{fig:cm-mixed} shows where the online errors fall. No attack window was ever assigned to a wrong attack class or to benign, and no benign window to an attack. All online errors lie in two columns. \emph{Unknown anomaly} holds 28 attack windows that the Isolation Forest flagged before a fingerprint for their behaviour existed: they count as detected attacks but not as correctly categorised. \emph{Unclassified} holds 147 benign windows and 10 attack windows (9 SSH, 1 C2) seen before the first clustering pass. Online macro F1 is therefore 0.458 at accuracy 0.770. After clustering the matrix is almost diagonal: two windows remain unclassified (one benign, one SSH), giving macro F1 0.995 and accuracy 0.998. Fig.~\ref{fig:ui-cm} shows the same matrices as the Evaluation view renders them.
+
+\begin{table}[t]
+\centering
+\caption{W1--W2: Scores measured in the web application}
+\label{tab:web}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Measure & W1 demo (10$\times$) & W2 mixed (100$\times$, auto) \\
+\midrule
+Events / dropped & 2,123 / 58 & 7,528 / 243 \\
+Labelled windows & 977 & 805 \\
+Fingerprints (non-benign) & 10 (1) & 18 (9) \\
+Alerts / active rules & 5 / 1 & 17 / 8 \\
+TP / FP / FN / TN & 7 / 4 / 6 / 960 & 39 / 0 / 10 / 756 \\
+Attack precision / recall & 0.636 / 0.538 & 1.000 / 0.796 \\
+Attack F1 & 0.583 & 0.886 \\
+Macro F1 online / final & 0.785 / 0.980 & 0.458 / 0.995 \\
+Accuracy online / final & 0.768 / 0.999 & 0.770 / 0.998 \\
+Mean time to detect / to rule & 20.0 / 17.5 s & 10.0 / 30.0 s \\
+Returning recognised / alerted & 1 of 1 / 1 of 1 & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure*}[t]
+\centering
+\begin{minipage}[b]{0.39\textwidth}\centering
+\resizebox{\linewidth}{!}{\input{figures/cm_mixed_online.tex}}\\[1mm]
+{\footnotesize (a) Online, at detection time}
+\end{minipage}\hfill
+\begin{minipage}[b]{0.34\textwidth}\centering
+\resizebox{\linewidth}{!}{\input{figures/cm_mixed_final.tex}}\\[1mm]
+{\footnotesize (b) After clustering}
+\end{minipage}\hfill
+\begin{minipage}[b]{0.24\textwidth}\centering
+\resizebox{\linewidth}{!}{\input{figures/cm_mixed_binary.tex}}\\[1mm]
+{\footnotesize (c) Attack vs.\ benign}
+\end{minipage}
+\caption{W2 confusion matrices measured in the web application (805 labelled windows of the mixed replay under auto-apply). Cells show window counts; shading is row-normalised; outlined cells are correct. Online errors fall only in the \emph{Unknown} and \emph{Unclass.} columns, i.e.\ before a fingerprint for the behaviour existed; no attack class is confused with another or with benign.}
+\label{fig:cm-mixed}
+\end{figure*}
+
+\begin{figure}[t]
+\centering
+\begin{minipage}[b]{0.50\columnwidth}\centering
+\resizebox{\linewidth}{!}{\input{figures/cm_demo_online.tex}}\\[0.5mm]
+{\footnotesize (a) Online}
+\end{minipage}\hfill
+\begin{minipage}[b]{0.46\columnwidth}\centering
+\resizebox{\linewidth}{!}{\input{figures/cm_demo_binary.tex}}\\[0.5mm]
+{\footnotesize (b) Attack vs.\ benign}
+\end{minipage}
+\caption{W1 confusion matrices (977 windows of the scripted demonstration). After clustering (not shown) all 964 benign and 12 of 13 SSH windows are correct.}
+\label{fig:cm-demo}
+\end{figure}
+
+\begin{figure*}[t]
+\centering
+\begin{minipage}[t]{0.495\textwidth}\centering
+\shot{figures/web_mixed_cm_online.png}\\[0.5mm]{\footnotesize (a) Online}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.495\textwidth}\centering
+\shot{figures/web_mixed_cm_final.png}\\[0.5mm]{\footnotesize (b) After clustering}
+\end{minipage}
+\caption{The W2 confusion matrices as rendered by the application's Evaluation view (screenshots).}
+\label{fig:ui-cm}
+\end{figure*}
+
+\textit{Per-campaign timing.} Table~\ref{tab:campaigns} lists the ground-truth campaigns of W2. Every labelled attack campaign was detected within 5--25~s of its first event and received a rule within 20--40~s. Enforcement dropped 27--67\% of the events of the brute-force, scan and C2 campaigns. The SYN and UDP flood slices are short (about 28~s and 42~s of replay) and their rate-limit rules became active 35~s and 40~s after their first events, so almost no flood traffic was left to drop. The unlabelled OpenCanary slice received a web-probing rule after 15~s.
+
+\begin{table}[t]
+\centering
+\caption{W2: Ground-truth campaigns in the web application}
+\label{tab:campaigns}
+\footnotesize
+\setlength{\tabcolsep}{2.5pt}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}llrrrr@{}}
+\toprule
+Campaign (label) & Behaviour & Events & Dropped & TTD & TTR \\
+\midrule
+CIC-DDoS2019 Syn & SYN flood & 3,000 & 0 & 5 s & 35 s \\
+CIC-DDoS2019 DrDoS\_DNS & UDP flood & 2,250 & 0 & 5 s & 40 s \\
+CIC-IDS2017 SSH-Patator & SSH brute force & 96 & 30 & 10 s & 35 s \\
+Cowrie (label override) & SSH brute force & 168 & 113 & 25 s & 20 s \\
+IoT-23 C\&C-HeartBeat & Botnet / C2 & 72 & 34 & 10 s & 30 s \\
+IoT-23 HorizontalPortScan & Port scan (fast) & 180 & 48 & 5 s & 35 s \\
+OpenCanary (unlabelled) & -- & 162 & 18 & -- & 15 s \\
+CIC-IDS2017 BENIGN (480 IPs) & Benign & 1,600 & 0 & -- & -- \\
+\bottomrule
+\end{tabular}}\\[2pt]
+\raggedright\scriptsize TTD/TTR: time from the campaign's first event to its first flagged window / first rule.
+\end{table}
+
+\textit{Effect of enforcement (RQ3).} The headless run of the same mix in suggest mode (E3 below) evaluated 836 windows with $\mathrm{TP}=69$ and $\mathrm{FN}=11$. Under auto-apply, the 243 dropped events removed exactly 31 attack windows (836$-$805), all of them after a rule had been activated, i.e.\ windows the system would have matched. The attack windows that remain are disproportionately early ones, observed before any fingerprint existed, so recall falls from 0.863 to 0.796 and online macro F1 from 0.626 to 0.458 while precision stays at 1.000 and the after-clustering macro F1 is unchanged (0.995). Window-level scores of a system that enforces its own decisions therefore understate its effect; the dropped-event counts in Table~\ref{tab:campaigns} are the complementary measure.
+
 \subsection{E1: Adapter coverage}
 Table~\ref{tab:e1} shows which fields each format actually provides. Flow sources fill the flow totals almost completely. Honeypot logs fill credentials, commands and HTTP fields but no flow totals, which is why features are defined per field. Parsing costs a fixed 0.1--0.18~s per CSV file, dominated by pandas set-up, and 6--10~ms per JSON or TSV file of this size.
 
@@ -414,8 +586,8 @@ All & 40/42 & 0.955 (0.885) & 6.8 s & 0.88 & 3/7 classes \\
 \raggedright\scriptsize Rec.: part B matched the part-A fingerprint; every recognised run also raised a returning alert. Delay: part-B start to alert. Drop: share of part-B events dropped.
 \end{table}
 
-\subsection{E3: Mixed replay}
-Eight slices from all six files ran overlapping in one plan: 7,528 events and 836 labelled windows. They yielded 18 fingerprints, 9 of them non-benign, covering SYN flood, UDP flood, SSH brute force, fast port scan, C2, web probing (from the unlabelled OpenCanary log) and unknown anomaly. Attack-versus-benign detection had $\mathrm{TP}=69$, $\mathrm{FP}=0$, $\mathrm{FN}=11$, $\mathrm{TN}=756$, giving precision 1.000, recall 0.863 and F1 0.926. Per-behaviour results are in Table~\ref{tab:e3}. Online recall is low because windows observed before the first clustering pass are unmatched by construction. After clustering, the macro F1 was 0.995. The mean time to detect was 10.0~s and to rule 30.0~s. These per-class precisions of 1.0 partly reflect that the sample classes come from different sources and hardly overlap in feature space.
+\subsection{E3: Mixed replay, headless in suggest mode}
+The same eight slices as W2, run headless without enforcement, from all six files produced 7,528 events and 836 labelled windows. They yielded 18 fingerprints, 9 of them non-benign, covering SYN flood, UDP flood, SSH brute force, fast port scan, C2, web probing (from the unlabelled OpenCanary log) and unknown anomaly. Attack-versus-benign detection had $\mathrm{TP}=69$, $\mathrm{FP}=0$, $\mathrm{FN}=11$, $\mathrm{TN}=756$, giving precision 1.000, recall 0.863 and F1 0.926. Per-behaviour results are in Table~\ref{tab:e3}. Online recall is low because windows observed before the first clustering pass are unmatched by construction. After clustering, the macro F1 was 0.995. The mean time to detect was 10.0~s and to rule 30.0~s. These per-class precisions of 1.0 partly reflect that the sample classes come from different sources and hardly overlap in feature space.
 
 \begin{table}[t]
 \centering
@@ -476,8 +648,8 @@ DBSCAN $\varepsilon=2.0$ & 0.881 & 0.787 & 0.400 & 0.989 & 7/7 \\
 \raggedright\scriptsize Precision was 1.000 in every variant. Ret.: returning attackers recognised.
 \end{table}
 
-\subsection{E5: Scripted demonstration}
-The deterministic demo replays benign background, SSH-Patator part A, a switch to auto-apply, and part B from new addresses (Fig.~\ref{fig:timeline}). The baseline was calibrated on 144 windows at $t=30$~s. The SSH fingerprint formed at $t=60$~s, when its rule was \emph{suggested}. Part B started at $t=110.2$~s, and 4.8~s later the returning alert fired with similarity 0.89, the rule was auto-applied and traffic from the new source began to be dropped (58 of 2,123 events). Four benign windows raised low-severity anomaly candidates, which gives attack-versus-benign precision 0.636 on this small run.
+\subsection{E5: Scripted demonstration timeline}
+Fig.~\ref{fig:timeline} plots the headless run of the W1 scenario at a finer time resolution; its event and drop counts are identical to those of the web application. The deterministic demo replays benign background, SSH-Patator part A, a switch to auto-apply, and part B from new addresses (Fig.~\ref{fig:timeline}). The baseline was calibrated on 144 windows at $t=30$~s. The SSH fingerprint formed at $t=60$~s, when its rule was \emph{suggested}. Part B started at $t=110.2$~s, and 4.8~s later the returning alert fired with similarity 0.89, the rule was auto-applied and traffic from the new source began to be dropped (58 of 2,123 events). Four benign windows raised low-severity anomaly candidates, which gives attack-versus-benign precision 0.636 on this small run.
 
 \begin{figure}[t]
 \centering
@@ -532,58 +704,66 @@ Live API latency under 100$\times$ replay & 17--72 ms \\
 \end{table}
 
 \section{Discussion}\label{sec:discussion}
-\textit{Behaviour as the unit of response.} The returning-attacker result supports the review's claim that behavioural descriptors survive infrastructure rotation~\cite{review2026,mohril2026}: changing every source address left the fingerprint match intact in 40 of 42 runs, and the episode rule turned that match into an actionable alert within one or two hops. Binding rules to fingerprint episodes gives a unit that, as IBAF argues~\cite{mohril2026}, is more stable than an address yet still fine-grained enough to choose a rule kind.
+\textit{Behaviour as the unit of response.} The returning-attacker result supports the claim that behavioural descriptors survive infrastructure rotation~\cite{savage2025,lim2026}: changing every source address left the fingerprint match intact in 40 of 42 runs, and the episode rule turned that match into an actionable alert within one or two hops. Binding rules to fingerprint episodes gives a unit that is more stable than an address yet still fine-grained enough to choose a rule kind.
 
 \textit{Deterministic first.} All decisions in the prototype are rule- or similarity-based. The learned components (HDBSCAN and the Isolation Forest) only propose structure, and every decision carries an explanation. This follows the ablation evidence of~\cite{oliveira2026}. Our own ablations point the same way: the categorical term helps separate behaviours but cannot recognise a returning attacker on its own.
 
+\textit{Reading the confusion matrices.} The matrices of Figs.~\ref{fig:cm-mixed} and~\ref{fig:cm-demo} separate two questions that a single accuracy figure conflates: \emph{is this window an attack?} and \emph{which behaviour is it?} The first is answered almost immediately (attack precision 1.000 in W2, time to detect 5--25~s), while the second waits for a fingerprint to exist, which takes one clustering pass. The gap between online (0.458) and after-clustering (0.995) macro F1 in W2 is therefore a latency, not a confusion: no attack window was ever assigned to a wrong attack class. The clustering interval and the minimum cluster size control this latency; a fingerprint library carried over from earlier runs removes it for known behaviours, which is exactly the returning-attacker case. The diagonal after clustering must also be read against the threats to validity below: the sample classes come from different files and hardly overlap in feature space, and results on public benchmarks do not necessarily transfer to deception data~\cite{beltran2026}.
+
+\textit{Evaluating a system that acts.} Under auto-apply, blocked traffic no longer produces windows, so recall computed over the windows that remain falls (0.863 to 0.796) although the system did better, not worse. Evaluations of adaptive defences should therefore report enforcement outcomes, such as dropped events per campaign and time to rule, next to detection scores, or score detection in a suggest-mode shadow run, as we do with E3.
+
 \textit{Where the categoriser fails.} Absolute rate thresholds are fragile under time compression (E2). A deployment on live telemetry does not compress time, but replay-based evaluation does, and so would a deployment whose window size differs from the one the thresholds were written for. Rate conditions should be expressed relative to the baseline, for example as $z$-scores, or learned from labelled data, with the hand-written rules kept as explanations, as~\cite{beltran2026} does with SHAP.
 
-\textit{Maturity.} In the five-level maturity model of~\cite{review2026}, the prototype implements level-3 analysis (correlated detection, explanations, rule-based response) and parts of level 4: staged rules, an allowlist invariant, fingerprints that update with evidence and drift re-categorisation. It has no adaptive deception, no verified rule-set consistency~\cite{pozo2009} and no live traffic.
+\textit{Maturity.} On a five-level scale from static decoy to closed loop, the prototype implements level-3 analysis (correlated detection, explanations, rule-based response) and parts of level 4: staged rules, an allowlist invariant, fingerprints that update with evidence and drift re-categorisation. It has no adaptive deception, no verification of generated rules against an existing policy and no live traffic.
 
-\textit{What was not measured.} Following the review's recommendation to report unmeasured quantities next to headline numbers~\cite{review2026}, we did not measure:
+\textit{What was not measured.} Unmeasured quantities should be reported next to headline numbers; we did not measure:
 \begin{itemize}
 \item any result on the full CIC-IDS2017, CIC-DDoS2019 or IoT-23 data, or on real Cowrie and OpenCanary logs;
 \item robustness to an adaptive adversary that shapes its traffic into benign clusters or poisons the buffer;
 \item end-to-end latency on live traffic, or the effect of enforcement on a real network;
-\item the consistency of generated rule sets with existing firewall policy~\cite{pozo2009};
+\item the consistency of generated rule sets with existing firewall policy;
 \item the variance of results beyond the split and seed sweep, since every run is deterministic.
 \end{itemize}
 
-\textit{Threats to validity.} The samples are synthesised, small and looped, so absolute scores, especially the per-class precision of 1.0, overstate what real traffic will yield. Real CIC data reuses one attacker address across classes, so per-IP windows can mix behaviours. The category ground truth relies on our label table. The thresholds were tuned during development on the same samples.
+\textit{Threats to validity.} The samples are synthesised, small and looped, so absolute scores, especially the per-class precision of 1.0 and the near-diagonal confusion matrices, overstate what real traffic will yield; the full benchmarks will add label noise and class overlap that the samples do not have~\cite{aparna2026,beltran2026}. Real CIC data reuses one attacker address across classes, so per-IP windows can mix behaviours. The category ground truth relies on our label table. The thresholds were tuned during development on the same samples. The web-application results are single deterministic runs per scenario.
 
 \section{Conclusion and Future Work}
-We presented a reproducible, label-isolated prototype that turns honeypot logs and labelled flows into behavioural fingerprints, recognises the same behaviour when it returns from new addresses, and generates staged, allowlist-safe firewall rules in three formats. On sample data it recognised returning attackers in 40 of 42 replays within one or two hops, reached an attack-versus-benign F1 of 0.926 at precision 1.0, and ran at about 9,000 events/s. The next steps follow directly from the gaps: running the experiment harness on the full datasets and on live Cowrie, OpenCanary and Zeek feeds; replacing absolute-rate rules with baseline-relative or learned thresholds; adding consistency checks~\cite{pozo2009} and canary rollback~\cite{panwar} before enforcement; and evaluating against adaptive adversaries, in line with the agenda of~\cite{review2026}.
+We presented a reproducible, label-isolated system, deployed as a SOC web application, that turns honeypot logs and labelled flows into behavioural fingerprints, recognises the same behaviour when it returns from new addresses, and generates staged, allowlist-safe firewall rules in three formats. Measured in the running application on sample data, it recognised the returning attacker of the demonstration within one hop and blocked 92\% of its returning events, and on an eight-source mixed replay under automatic enforcement it reached attack precision 1.000 and recall 0.796 with a confusion matrix that is diagonal after clustering. In the headless sweep it recognised returning attackers in 40 of 42 replays, and it ran at about 9,000 events/s. The next steps follow directly from the gaps: running the experiment harness on the full datasets and on live Cowrie, OpenCanary and Zeek feeds; replacing absolute-rate rules with baseline-relative or learned thresholds; adding consistency checks against existing policy and staged rollback before enforcement; carrying fingerprint libraries across runs to close the online categorisation gap; and evaluating against adaptive adversaries.
+
+\section*{Ethics and Artifact Availability}
+No experiment sent traffic to any host: all attack activity consists of replayed records, and generated rules were enforced only in the application's simulated firewall. The source code, the sample files, the experiment harness (\texttt{backend/experiments/paper\_experiments.py}), the web-capture script (\texttt{paper/tools/capture\_site.py}), the figure generator (\texttt{paper/tools/make\_figs.py}) and all raw result files (\texttt{paper/results/}) accompany this paper; the datasets themselves must be obtained from their publishers.
 
 \begin{thebibliography}{99}
-\bibitem{spitzner2002} L. Spitzner, \emph{Honeypots: Tracking Hackers}. Boston, MA, USA: Addison-Wesley, 2002.
-\bibitem{axelsson2000} S. Axelsson, ``The base-rate fallacy and the difficulty of intrusion detection,'' \emph{ACM Trans. Inf. Syst. Secur.}, vol. 3, no. 3, pp. 186--205, 2000.
+\bibitem{moric2025} Z. Mori\'c, V. Daki\'c, and D. Regvart, ``Advancing cybersecurity with honeypots and deception strategies,'' \emph{Informatics}, vol. 12, no. 1, Art. no. 14, 2025, doi: 10.3390/informatics12010014.
+\bibitem{qurbonaliyeva2024} D. Qurbonaliyeva and G. Abduraxmanova, ``Analysis of methods of attracting attackers in the honeypot,'' in \emph{Proc. 8th Int. Conf. Future Netw. Distrib. Syst. (ICFNDS '24)}, 2024, pp. 897--904, doi: 10.1145/3726122.3726253.
+\bibitem{mahija2025} S. G. Mahija, ``The evolution of honeypots: From rudimentary traps to AI-driven intelligent deception systems,'' IEEE, 2025.
 \bibitem{aseres2026} A. K. Aseres, S. Z. Melese, A. M. Beyene, and L. K. Tegegne, ``High-interaction honeypots in cyber deception: Evolution, design, deployment, and future trends,'' \emph{IEEE Access}, vol. 14, pp. 99861--99896, 2026, doi: 10.1109/ACCESS.2026.3706613.
 \bibitem{maraden2026} Y. Maraden, Z. Ananda, I. G. D. Nugraha, and R. F. Sari, ``DYNAMIT: K-Medoids-based machine learning for scalable honeynet deception and intelligent threat profiling,'' \emph{Electronics}, vol. 15, no. 11, Art. no. 2490, 2026, doi: 10.3390/electronics15112490.
+\bibitem{sladic2024} M. Sladi\'c, V. Valeros, C. Catania, and S. Garcia, ``LLM in the shell: Generative honeypots,'' in \emph{Proc. IEEE EuroS\&PW}, 2024, pp. 430--435.
+\bibitem{wang2024} Z. Wang \emph{et al.}, ``HoneyGPT: Breaking the trilemma in terminal honeypots with large language model,'' arXiv:2406.01882, 2024.
+\bibitem{gazdar2025} T. Gazdar, L. Murad, S. Al-Jahdali, F. Zwawi, and R. Mandili, ``TangleNet: An advanced cyber deception model based on reinforcement learning,'' \emph{Rev. Rom. Inform. Autom.}, vol. 35, pp. 23--36, 2025.
+\bibitem{lanz2025} S. Lanz \emph{et al.}, ``Optimizing Internet of Things honeypots with machine learning: A review,'' \emph{Appl. Sci.}, vol. 15, Art. no. 5251, 2025.
 \bibitem{oliveira2026} R. Oliveira, T. Gomes, D. Pinho, and F. Almeida, ``An integrated honeypot and LLM-based framework for near real-time detection and behavioral analysis of malicious activities,'' \emph{J. Cybersecur. Priv.}, vol. 6, no. 5, Art. no. 147, 2026, doi: 10.3390/jcp6050147.
-\bibitem{review2026} S. Mishra, S. Mohril, and R. Gupta, ``Honeypots and behavioural intelligence for adaptive cyber defence: A comprehensive review,'' manuscript, 2026.
-\bibitem{mohril2026} S. Mohril, ``An intelligent behavioural analysis framework for adaptive network defence using behavioural fingerprinting,'' manuscript, 2026.
-\bibitem{savage2025} E. Savage, N. D. Bastian, and R. Zhou, ``Attack behavior observations and profiling through varying cyber deception mechanisms,'' in \emph{Proc. IEEE MILCOM}, 2025, pp. 758--763, doi: 10.1109/MILCOM64451.2025.11310496.
+\bibitem{savage2025} E. Savage, N. D. Bastian, and R. Zhou, ``Attack behavior observations and profiling through varying cyber deception mechanisms,'' in \emph{Proc. IEEE Military Commun. Conf. (MILCOM)}, 2025, pp. 758--763, doi: 10.1109/MILCOM64451.2025.11310496.
 \bibitem{lim2026} T. K. Lim and B. Hobert, ``Enhancing honeypot-based cyber attribution using hierarchical clustering,'' \emph{Digital Threats: Research and Practice}, ACM, 2026.
-\bibitem{zhang2023} Y.-J. Zhang, W.-J. Liu, K.-N. Guo, and Y.-M. Kang, ``Identification of SSH honeypots using machine learning techniques based on multi-fingerprinting,'' in \emph{Proc. IEEE 6th ITNEC}, 2023, pp. 1376--1381, doi: 10.1109/ITNEC56291.2023.10082467.
 \bibitem{beltran2026} P. Beltr\'an-L\'opez, M. Gil P\'erez, and P. Nespoli, ``Enhancing strategic decision-making via semantic inference: An adaptive framework for threat actor profiling,'' \emph{Inf. Fusion}, vol. 134, Art. no. 104359, 2026, doi: 10.1016/j.inffus.2026.104359.
+\bibitem{zhang2023} Y.-J. Zhang, W.-J. Liu, K.-N. Guo, and Y.-M. Kang, ``Identification of SSH honeypots using machine learning techniques based on multi-fingerprinting,'' in \emph{Proc. IEEE 6th ITNEC}, 2023, pp. 1376--1381, doi: 10.1109/ITNEC56291.2023.10082467.
 \bibitem{balogh2025} \'A. Balogh, E. Kail, M. \'Ers\H{o}k, and A. B\'an\'ati, ``Possibilities for optimization of real time attacker profiling with honeypots,'' in \emph{Proc. IEEE 19th SACI}, 2025, pp. 111--116, doi: 10.1109/SACI66288.2025.11030113.
-\bibitem{dusi2009} M. Dusi, M. Crotti, F. Gringoli, and L. Salgarelli, ``Tunnel Hunter: Detecting application-layer tunnels with statistical fingerprinting,'' \emph{Comput. Netw.}, vol. 53, pp. 81--97, 2009, doi: 10.1016/j.comnet.2008.09.010.
-\bibitem{yang2010} Y. (C.) Yang, ``Web user behavioral profiling for user identification,'' \emph{Decis. Support Syst.}, vol. 49, pp. 261--271, 2010, doi: 10.1016/j.dss.2010.03.001.
-\bibitem{campello2013} R. J. G. B. Campello, D. Moulavi, and J. Sander, ``Density-based clustering based on hierarchical density estimates,'' in \emph{Proc. PAKDD}, LNCS vol. 7819, 2013, pp. 160--172.
+\bibitem{shahzad2026} F. Shahzad, M. Saleh, and R. N. B. Ujjan, ``An autonomous AI-driven cyber deception framework with behaviour-based attribution,'' \emph{Computers}, 2026.
+\bibitem{javadpour2024} A. Javadpour, F. Ja'fari, T. Taleb, M. Shojafar, and C. Benza\"id, ``A comprehensive survey on cyber deception techniques to improve honeypot performance,'' \emph{Comput. Secur.}, vol. 140, Art. no. 103792, 2024.
+\bibitem{zhangshi2023} Y. Zhang and Y. Shi, ``Constructing dynamic honeypot using machine learning,'' in \emph{Proc. 8th Int. Conf. Cyber Secur. Inf. Eng.}, 2023, pp. 116--120.
+\bibitem{bartwal2022} U. Bartwal, S. Mukhopadhyay, R. Negi, and S. Shukla, ``Security orchestration, automation, and response engine for deployment of behavioural honeypots,'' in \emph{Proc. IEEE DSC}, 2022, pp. 1--8.
+\bibitem{anwar2022} A. H. Anwar, C. A. Kamhoua, N. O. Leslie, and C. Kiekintveld, ``Honeypot allocation for cyber deception under uncertainty,'' \emph{IEEE Trans. Netw. Service Manage.}, vol. 19, pp. 3438--3452, 2022.
+\bibitem{silaen2025} M. Silaen, J. S. Suroso, and C. Lim, ``Capturing post-login behaviors in MS SQL honeypots,'' 2025.
+\bibitem{guan2024} C. Guan, G. Cao, and S. Zhu, ``HoneyLLM: Enabling shell honeypots with large language models,'' in \emph{Proc. IEEE CNS}, 2024, pp. 1--9.
+\bibitem{otal2024} H. T. Otal and M. A. Canbaz, ``LLM honeypot: Leveraging large language models as advanced interactive honeypot systems,'' in \emph{Proc. IEEE CNS}, 2024.
+\bibitem{guan2023} C. Guan, H. Liu, G. Cao, S. Zhu, and T. La Porta, ``HoneyIoT: Adaptive high-interaction honeypot for IoT devices through reinforcement learning,'' in \emph{Proc. 16th ACM WiSec}, 2023, pp. 49--59.
+\bibitem{lanka2024} P. Lanka, K. Gupta, and C. Varol, ``Intelligent threat detection---AI-driven analysis of honeypot data to counter cyber threats,'' \emph{Electronics}, vol. 13, no. 13, Art. no. 2465, 2024.
+\bibitem{aparna2026} Aparna S, A. Anilkumar, Mohammed Ashmal P K, and D. S. Kumar, ``AI-powered honeypot with intrusion detection system,'' \emph{Int. J. Eng. Develop. Res.}, vol. 14, no. 2, pp. 744--749, May 2026.
+\bibitem{pashaei2022} A. Pashaei, M. E. Akbari, M. Zolfy Lighvan, and A. Charmin, ``Early intrusion detection system using honeypot for industrial control networks,'' \emph{Results Eng.}, vol. 16, Art. no. 100576, 2022, doi: 10.1016/j.rineng.2022.100576.
+\bibitem{ilg2025} N. Ilg, D. Germek, P. Duplys, and M. Menth, ``Beekeeper: Accelerating honeypot analysis with LLM-driven feedback,'' \emph{IEEE Access}, vol. 13, pp. 168034--168054, 2025.
 \bibitem{mallik2026} S. V. Mallikarjunaradhya, R. Pavithra, N. Sanjay, J. C. Sriram, and S. V. S. Yadav, ``Adaptive real-time intrusion prevention framework using Double DQN and prioritized experience replay,'' in \emph{Proc. ICAUC}, IEEE, 2026.
-\bibitem{panwar} S. S. Panwar \emph{et al.}, ``A dual-machine intrusion prevention system architecture with base-rate-fallacy mitigation,'' IEEE.
-\bibitem{liu2008} F. T. Liu, K. M. Ting, and Z.-H. Zhou, ``Isolation forest,'' in \emph{Proc. 8th IEEE ICDM}, 2008, pp. 413--422.
-\bibitem{saboori2010} E. Saboori, S. Parsazad, and Y. Sanatkhani, ``Automatic firewall rules generator for anomaly detection systems with Apriori algorithm,'' in \emph{Proc. 3rd ICACTE}, 2010, vol. 6, pp. V6-57--V6-60.
-\bibitem{pozo2009} S. Pozo, R. Ceballos, and R. M. Gasca, ``Model-based development of firewall rule sets: Diagnosing model inconsistencies,'' \emph{Inf. Softw. Technol.}, vol. 51, pp. 894--915, 2009, doi: 10.1016/j.infsof.2008.05.001.
-\bibitem{sibi2020} S. Sibi Chakkaravarthy, D. Sangeetha, M. Vimal Cruz, V. Vaidehi, and B. Raman, ``Design of intrusion detection honeypot using social leopard algorithm to detect IoT ransomware attacks,'' \emph{IEEE Access}, vol. 8, pp. 169944--169956, 2020, doi: 10.1109/ACCESS.2020.3023764.
-\bibitem{sharafaldin2018} I. Sharafaldin, A. H. Lashkari, and A. A. Ghorbani, ``Toward generating a new intrusion detection dataset and intrusion traffic characterization,'' in \emph{Proc. 4th ICISSP}, 2018, pp. 108--116.
-\bibitem{sharafaldin2019} I. Sharafaldin, A. H. Lashkari, S. Hakak, and A. A. Ghorbani, ``Developing realistic distributed denial of service (DDoS) attack dataset and taxonomy,'' in \emph{Proc. IEEE ICCST}, 2019, pp. 1--8.
-\bibitem{cowrie} Cowrie SSH/Telnet honeypot. [Online]. Available: \url{https://docs.cowrie.org/}
-\bibitem{opencanary} Thinkst Applied Research, ``OpenCanary.'' [Online]. Available: \url{https://github.com/thinkst/opencanary}
-\bibitem{paxson1999} V. Paxson, ``Bro: A system for detecting network intruders in real-time,'' \emph{Comput. Netw.}, vol. 31, no. 23--24, pp. 2435--2463, 1999.
-\bibitem{iot23} S. Garcia, A. Parmisano, and M. J. Erquiaga, ``IoT-23: A labeled dataset with malicious and benign IoT network traffic,'' Zenodo, 2020, doi: 10.5281/zenodo.4743746.
-\bibitem{broder1997} A. Z. Broder, ``On the resemblance and containment of documents,'' in \emph{Proc. Compression and Complexity of Sequences}, 1997, pp. 21--29.
-\bibitem{steele2014} G. L. Steele Jr., D. Lea, and C. H. Flood, ``Fast splittable pseudorandom number generators,'' in \emph{Proc. ACM OOPSLA}, 2014, pp. 453--472.
+\bibitem{slimani2026} S. Slimani \emph{et al.}, ``SAFIRE: An intelligent adaptive security framework for IoT environments using edge honeypots, AI-IDS and SDN,'' \emph{J. Netw. Comput. Appl.}, 2025/2026.
 \end{thebibliography}
 
 \end{document}

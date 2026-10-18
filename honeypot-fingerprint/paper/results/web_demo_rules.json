@@ -1,0 +1,96 @@
+[
+ {
+  "id": "R-0002",
+  "fp_id": "FP-0010",
+  "fp_name": "SSH brute force #1",
+  "category": "ssh_bruteforce",
+  "episode_id": "FP-0010/E2",
+  "kind": "ip_block",
+  "params": {
+   "ips": [
+    "80.13.221.214"
+   ],
+   "timeout": 900,
+   "ports": [
+    22
+   ],
+   "threshold": [
+    5,
+    60
+   ]
+  },
+  "reason": "FP-0010 'SSH brute force #1' (ssh_bruteforce, high): returning behaviour from new sources; block 1 source(s).",
+  "created": 1792305892.6101794,
+  "expires": 1792306792.6101794,
+  "status": "active",
+  "history": [
+   {
+    "t": 1792305892.6101794,
+    "status": "suggested",
+    "by": "generator"
+   },
+   {
+    "t": 1792305892.6101794,
+    "status": "approved",
+    "by": "auto-apply"
+   },
+   {
+    "t": 1792305892.6101794,
+    "status": "active",
+    "by": "auto-apply"
+   }
+  ],
+  "hits": 58,
+  "rev": 1,
+  "alert_id": "AL-00005",
+  "formats": {
+   "nftables": "# FP-0010 'SSH brute force #1' (ssh_bruteforce, high): returning behaviour from new sources; block 1 source(s).\nadd set inet filter hfp_r_0002 { type ipv4_addr; flags timeout; elements = { 80.13.221.214 timeout 900s } }\nadd rule inet filter input ip saddr @hfp_r_0002 drop comment \"R-0002 FP-0010 ssh_bruteforce\"",
+   "iptables": "# FP-0010 'SSH brute force #1' (ssh_bruteforce, high): returning behaviour from new sources; block 1 source(s).\niptables -I INPUT -s 80.13.221.214 -m comment --comment \"R-0002 FP-0010 ssh_bruteforce\" -j DROP",
+   "suricata": "# FP-0010 'SSH brute force #1' (ssh_bruteforce, high): returning behaviour from new sources; block 1 source(s).\ndrop tcp 80.13.221.214 any -> $HOME_NET 22 (msg:\"HFP SSH brute force #1 (ssh_bruteforce) R-0002\"; flow:to_server; threshold:type both, track by_src, count 5, seconds 60; classtype:attempted-admin; sid:9100002; rev:1;)"
+  },
+  "edited": false,
+  "n_ips": 1
+ },
+ {
+  "id": "R-0001",
+  "fp_id": "FP-0010",
+  "fp_name": "SSH brute force #1",
+  "category": "ssh_bruteforce",
+  "episode_id": "FP-0010/E1",
+  "kind": "ip_block",
+  "params": {
+   "ips": [
+    "172.16.0.1"
+   ],
+   "timeout": 900,
+   "ports": [
+    22
+   ],
+   "threshold": [
+    5,
+    60
+   ]
+  },
+  "reason": "FP-0010 'SSH brute force #1' (ssh_bruteforce, high): matched fingerprint; block 1 source(s).",
+  "created": 1792305837.6101794,
+  "expires": 1792306737.6101794,
+  "status": "suggested",
+  "history": [
+   {
+    "t": 1792305837.6101794,
+    "status": "suggested",
+    "by": "generator"
+   }
+  ],
+  "hits": 0,
+  "rev": 1,
+  "alert_id": "AL-00003",
+  "formats": {
+   "nftables": "# FP-0010 'SSH brute force #1' (ssh_bruteforce, high): matched fingerprint; block 1 source(s).\nadd set inet filter hfp_r_0001 { type ipv4_addr; flags timeout; elements = { 172.16.0.1 timeout 900s } }\nadd rule inet filter input ip saddr @hfp_r_0001 drop comment \"R-0001 FP-0010 ssh_bruteforce\"",
+   "iptables": "# FP-0010 'SSH brute force #1' (ssh_bruteforce, high): matched fingerprint; block 1 source(s).\niptables -I INPUT -s 172.16.0.1 -m comment --comment \"R-0001 FP-0010 ssh_bruteforce\" -j DROP",
+   "suricata": "# FP-0010 'SSH brute force #1' (ssh_bruteforce, high): matched fingerprint; block 1 source(s).\ndrop tcp 172.16.0.1 any -> $HOME_NET 22 (msg:\"HFP SSH brute force #1 (ssh_bruteforce) R-0001\"; flow:to_server; threshold:type both, track by_src, count 5, seconds 60; classtype:attempted-admin; sid:9100001; rev:1;)"
+  },
+  "edited": false,
+  "n_ips": 1
+ }
+]

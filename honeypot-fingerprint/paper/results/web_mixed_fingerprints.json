@@ -1,0 +1,2272 @@
+[
+ {
+  "id": "FP-0001",
+  "name": "Candidate: Botnet / C2 beaconing (FP-0001)",
+  "category": "botnet_c2",
+  "category_name": "Botnet / C2 beaconing",
+  "severity": "high",
+  "confidence": 1.0,
+  "status": "active",
+  "benign": false,
+  "origin": "anomaly",
+  "hit_count": 6,
+  "n_windows": 9,
+  "first_seen": 1792305835.5651371,
+  "last_seen": 1792305870.5651371,
+  "n_ips": 1,
+  "episodes": 1,
+  "version": 5,
+  "top_ips": [
+   "192.168.100.103"
+  ],
+  "returning": false,
+  "top_features": [
+   {
+    "feature": "log_long_events",
+    "z": 5.94,
+    "value": 3.0111,
+    "baseline": 1.5714
+   },
+   {
+    "feature": "log_size_std",
+    "z": -5.34,
+    "value": 0.0,
+    "baseline": 4.7093
+   },
+   {
+    "feature": "burstiness",
+    "z": -5.04,
+    "value": -1.0,
+    "baseline": 0.0591
+   }
+  ],
+  "radar": [
+   {
+    "axis": "log_events_ps",
+    "z": 2.1,
+    "value": 0.741
+   },
+   {
+    "axis": "log_rate_per_source",
+    "z": 2.3,
+    "value": 0.7595
+   },
+   {
+    "axis": "log_n_sources",
+    "z": -0.3,
+    "value": 0.463
+   },
+   {
+    "axis": "log_bytes_per_flow",
+    "z": -4.8,
+    "value": 0.0834
+   },
+   {
+    "axis": "log_pkts_per_flow",
+    "z": -0.88,
+    "value": 0.3916
+   },
+   {
+    "axis": "log_flow_dur",
+    "z": -2.75,
+    "value": 0.2015
+   },
+   {
+    "axis": "half_open_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "udp_ratio",
+    "z": -1.58,
+    "value": 0.3124
+   },
+   {
+    "axis": "log_uniq_dst_ports",
+    "z": -1.45,
+    "value": 0.3265
+   },
+   {
+    "axis": "log_uniq_dst_ips",
+    "z": -2.39,
+    "value": 0.2324
+   },
+   {
+    "axis": "iat_cv",
+    "z": -2.87,
+    "value": 0.1927
+   },
+   {
+    "axis": "fail_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "web_ratio",
+    "z": -1.51,
+    "value": 0.3203
+   },
+   {
+    "axis": "ssh_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "sensitive_path_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "log_cmd_count",
+    "z": 0.0,
+    "value": 0.5
+   }
+  ]
+ },
+ {
+  "id": "FP-0002",
+  "name": "Candidate: SSH brute force (FP-0002)",
+  "category": "ssh_bruteforce",
+  "category_name": "SSH brute force",
+  "severity": "high",
+  "confidence": 1.0,
+  "status": "active",
+  "benign": false,
+  "origin": "anomaly",
+  "hit_count": 7,
+  "n_windows": 11,
+  "first_seen": 1792305845.5651371,
+  "last_seen": 1792305890.5651371,
+  "n_ips": 1,
+  "episodes": 1,
+  "version": 7,
+  "top_ips": [
+   "172.16.0.1"
+  ],
+  "returning": false,
+  "top_features": [
+   {
+    "feature": "log_long_events",
+    "z": 7.92,
+    "value": 3.4889,
+    "baseline": 1.5714
+   },
+   {
+    "feature": "log_pkts_ps",
+    "z": 7.31,
+    "value": 4.5441,
+    "baseline": 1.835
+   },
+   {
+    "feature": "log_pkts_per_flow",
+    "z": 6.76,
+    "value": 4.013,
+    "baseline": 2.6611
+   }
+  ],
+  "radar": [
+   {
+    "axis": "log_events_ps",
+    "z": 3.31,
+    "value": 0.8399
+   },
+   {
+    "axis": "log_rate_per_source",
+    "z": 3.51,
+    "value": 0.8527
+   },
+   {
+    "axis": "log_n_sources",
+    "z": -0.3,
+    "value": 0.463
+   },
+   {
+    "axis": "log_bytes_per_flow",
+    "z": 0.24,
+    "value": 0.5294
+   },
+   {
+    "axis": "log_pkts_per_flow",
+    "z": 6.76,
+    "value": 0.9671
+   },
+   {
+    "axis": "log_flow_dur",
+    "z": -2.43,
+    "value": 0.2285
+   },
+   {
+    "axis": "half_open_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "udp_ratio",
+    "z": -1.58,
+    "value": 0.3124
+   },
+   {
+    "axis": "log_uniq_dst_ports",
+    "z": -1.45,
+    "value": 0.3265
+   },
+   {
+    "axis": "log_uniq_dst_ips",
+    "z": -2.39,
+    "value": 0.2324
+   },
+   {
+    "axis": "iat_cv",
+    "z": -0.88,
+    "value": 0.3923
+   },
+   {
+    "axis": "fail_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "web_ratio",
+    "z": -1.51,
+    "value": 0.3203
+   },
+   {
+    "axis": "ssh_ratio",
+    "z": 5.0,
+    "value": 0.9241
+   },
+   {
+    "axis": "sensitive_path_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "log_cmd_count",
+    "z": 0.0,
+    "value": 0.5
+   }
+  ]
+ },
+ {
+  "id": "FP-0003",
+  "name": "Candidate: UDP flood / amplification (FP-0003)",
+  "category": "udp_flood",
+  "category_name": "UDP flood / amplification",
+  "severity": "high",
+  "confidence": 1.0,
+  "status": "active",
+  "benign": false,
+  "origin": "anomaly",
+  "hit_count": 10,
+  "n_windows": 14,
+  "first_seen": 1792305850.5651371,
+  "last_seen": 1792305920.5651371,
+  "n_ips": 1,
+  "episodes": 1,
+  "version": 9,
+  "top_ips": [
+   "172.16.0.5"
+  ],
+  "returning": false,
+  "top_features": [
+   {
+    "feature": "log_long_events",
+    "z": 21.51,
+    "value": 6.7823,
+    "baseline": 1.5714
+   },
+   {
+    "feature": "log_rate_per_source",
+    "z": 17.62,
+    "value": 3.8273,
+    "baseline": 0.3041
+   },
+   {
+    "feature": "log_events_ps",
+    "z": 17.42,
+    "value": 3.8273,
+    "baseline": 0.3436
+   }
+  ],
+  "radar": [
+   {
+    "axis": "log_events_ps",
+    "z": 17.42,
+    "value": 0.9975
+   },
+   {
+    "axis": "log_rate_per_source",
+    "z": 17.62,
+    "value": 0.9975
+   },
+   {
+    "axis": "log_n_sources",
+    "z": -0.3,
+    "value": 0.463
+   },
+   {
+    "axis": "log_bytes_per_flow",
+    "z": -0.61,
+    "value": 0.4242
+   },
+   {
+    "axis": "log_pkts_per_flow",
+    "z": -7.81,
+    "value": 0.0197
+   },
+   {
+    "axis": "log_flow_dur",
+    "z": -8.25,
+    "value": 0.0159
+   },
+   {
+    "axis": "half_open_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "udp_ratio",
+    "z": 1.57,
+    "value": 0.6864
+   },
+   {
+    "axis": "log_uniq_dst_ports",
+    "z": 5.87,
+    "value": 0.9496
+   },
+   {
+    "axis": "log_uniq_dst_ips",
+    "z": -2.39,
+    "value": 0.2324
+   },
+   {
+    "axis": "iat_cv",
+    "z": -2.87,
+    "value": 0.1927
+   },
+   {
+    "axis": "fail_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "web_ratio",
+    "z": -1.51,
+    "value": 0.3203
+   },
+   {
+    "axis": "ssh_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "sensitive_path_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "log_cmd_count",
+    "z": 0.0,
+    "value": 0.5
+   }
+  ]
+ },
+ {
+  "id": "FP-0004",
+  "name": "Normal / benign traffic #1",
+  "category": "benign",
+  "category_name": "Normal / benign traffic",
+  "severity": "info",
+  "confidence": 0.705,
+  "status": "active",
+  "benign": true,
+  "origin": "cluster",
+  "hit_count": 45,
+  "n_windows": 9,
+  "first_seen": 1792305810.5651371,
+  "last_seen": 1792306040.5651371,
+  "n_ips": 249,
+  "episodes": 1,
+  "version": 1,
+  "top_ips": [
+   "93.50.31.21",
+   "159.236.85.200",
+   "212.76.122.88",
+   "80.110.8.45",
+   "103.128.203.192"
+  ],
+  "returning": false,
+  "top_features": [
+   {
+    "feature": "log_n_sources",
+    "z": 3.88,
+    "value": 2.2986,
+    "baseline": 0.8072
+   },
+   {
+    "feature": "log_pkts_ps",
+    "z": 2.14,
+    "value": 2.6292,
+    "baseline": 1.835
+   },
+   {
+    "feature": "log_syn_ack",
+    "z": -1.81,
+    "value": 0.0,
+    "baseline": 0.3999
+   }
+  ],
+  "radar": [
+   {
+    "axis": "log_events_ps",
+    "z": 1.72,
+    "value": 0.7025
+   },
+   {
+    "axis": "log_rate_per_source",
+    "z": -1.0,
+    "value": 0.3774
+   },
+   {
+    "axis": "log_n_sources",
+    "z": 3.88,
+    "value": 0.8743
+   },
+   {
+    "axis": "log_bytes_per_flow",
+    "z": -0.13,
+    "value": 0.4839
+   },
+   {
+    "axis": "log_pkts_per_flow",
+    "z": -0.07,
+    "value": 0.4917
+   },
+   {
+    "axis": "log_flow_dur",
+    "z": 0.3,
+    "value": 0.538
+   },
+   {
+    "axis": "half_open_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "udp_ratio",
+    "z": 1.57,
+    "value": 0.6864
+   },
+   {
+    "axis": "log_uniq_dst_ports",
+    "z": -1.45,
+    "value": 0.3265
+   },
+   {
+    "axis": "log_uniq_dst_ips",
+    "z": 1.08,
+    "value": 0.6314
+   },
+   {
+    "axis": "iat_cv",
+    "z": 0.83,
+    "value": 0.6025
+   },
+   {
+    "axis": "fail_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "web_ratio",
+    "z": -1.51,
+    "value": 0.3203
+   },
+   {
+    "axis": "ssh_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "sensitive_path_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "log_cmd_count",
+    "z": 0.0,
+    "value": 0.5
+   }
+  ]
+ },
+ {
+  "id": "FP-0005",
+  "name": "Normal / benign traffic #2",
+  "category": "benign",
+  "category_name": "Normal / benign traffic",
+  "severity": "info",
+  "confidence": 0.805,
+  "status": "active",
+  "benign": true,
+  "origin": "cluster",
+  "hit_count": 42,
+  "n_windows": 7,
+  "first_seen": 1792305820.5651371,
+  "last_seen": 1792306045.5651371,
+  "n_ips": 42,
+  "episodes": 1,
+  "version": 1,
+  "top_ips": [
+   "78.142.3.38",
+   "93.31.66.200",
+   "37.185.23.78",
+   "188.78.177.202",
+   "104.139.156.53"
+  ],
+  "returning": false,
+  "top_features": [
+   {
+    "feature": "log_iat_std",
+    "z": -2.29,
+    "value": 0.0011,
+    "baseline": 0.7348
+   },
+   {
+    "feature": "log_iat_mean",
+    "z": -2.04,
+    "value": 0.0018,
+    "baseline": 0.6633
+   },
+   {
+    "feature": "burstiness",
+    "z": -1.47,
+    "value": -0.25,
+    "baseline": 0.0591
+   }
+  ],
+  "radar": [
+   {
+    "axis": "log_events_ps",
+    "z": -0.41,
+    "value": 0.4494
+   },
+   {
+    "axis": "log_rate_per_source",
+    "z": -0.21,
+    "value": 0.4739
+   },
+   {
+    "axis": "log_n_sources",
+    "z": -0.3,
+    "value": 0.463
+   },
+   {
+    "axis": "log_bytes_per_flow",
+    "z": -0.25,
+    "value": 0.4684
+   },
+   {
+    "axis": "log_pkts_per_flow",
+    "z": -0.74,
+    "value": 0.408
+   },
+   {
+    "axis": "log_flow_dur",
+    "z": 0.96,
+    "value": 0.6176
+   },
+   {
+    "axis": "half_open_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "udp_ratio",
+    "z": -0.53,
+    "value": 0.4342
+   },
+   {
+    "axis": "log_uniq_dst_ports",
+    "z": 0.99,
+    "value": 0.6215
+   },
+   {
+    "axis": "log_uniq_dst_ips",
+    "z": -0.36,
+    "value": 0.4548
+   },
+   {
+    "axis": "iat_cv",
+    "z": -1.45,
+    "value": 0.3266
+   },
+   {
+    "axis": "fail_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "web_ratio",
+    "z": 0.6,
+    "value": 0.574
+   },
+   {
+    "axis": "ssh_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "sensitive_path_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "log_cmd_count",
+    "z": 0.0,
+    "value": 0.5
+   }
+  ]
+ },
+ {
+  "id": "FP-0006",
+  "name": "Normal / benign traffic #3",
+  "category": "benign",
+  "category_name": "Normal / benign traffic",
+  "severity": "info",
+  "confidence": 0.79,
+  "status": "active",
+  "benign": true,
+  "origin": "cluster",
+  "hit_count": 42,
+  "n_windows": 9,
+  "first_seen": 1792305810.5651371,
+  "last_seen": 1792306035.5651371,
+  "n_ips": 42,
+  "episodes": 1,
+  "version": 1,
+  "top_ips": [
+   "91.68.159.136",
+   "45.153.84.141",
+   "78.34.227.207",
+   "31.103.124.4",
+   "31.32.214.161"
+  ],
+  "returning": false,
+  "top_features": [
+   {
+    "feature": "log_iat_std",
+    "z": -2.28,
+    "value": 0.0048,
+    "baseline": 0.7348
+   },
+   {
+    "feature": "log_iat_mean",
+    "z": -2.03,
+    "value": 0.0046,
+    "baseline": 0.6633
+   },
+   {
+    "feature": "log_flow_dur",
+    "z": -1.6,
+    "value": 1.3292,
+    "baseline": 1.6501
+   }
+  ],
+  "radar": [
+   {
+    "axis": "log_events_ps",
+    "z": -0.04,
+    "value": 0.4955
+   },
+   {
+    "axis": "log_rate_per_source",
+    "z": 0.16,
+    "value": 0.5202
+   },
+   {
+    "axis": "log_n_sources",
+    "z": -0.3,
+    "value": 0.463
+   },
+   {
+    "axis": "log_bytes_per_flow",
+    "z": 0.73,
+    "value": 0.59
+   },
+   {
+    "axis": "log_pkts_per_flow",
+    "z": 0.86,
+    "value": 0.6059
+   },
+   {
+    "axis": "log_flow_dur",
+    "z": -1.6,
+    "value": 0.3096
+   },
+   {
+    "axis": "half_open_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "udp_ratio",
+    "z": -0.79,
+    "value": 0.4023
+   },
+   {
+    "axis": "log_uniq_dst_ports",
+    "z": 0.99,
+    "value": 0.6215
+   },
+   {
+    "axis": "log_uniq_dst_ips",
+    "z": 1.08,
+    "value": 0.6314
+   },
+   {
+    "axis": "iat_cv",
+    "z": -0.41,
+    "value": 0.4485
+   },
+   {
+    "axis": "fail_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "web_ratio",
+    "z": 0.86,
+    "value": 0.6058
+   },
+   {
+    "axis": "ssh_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "sensitive_path_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "log_cmd_count",
+    "z": 0.0,
+    "value": 0.5
+   }
+  ]
+ },
+ {
+  "id": "FP-0007",
+  "name": "Normal / benign traffic #4",
+  "category": "benign",
+  "category_name": "Normal / benign traffic",
+  "severity": "info",
+  "confidence": 0.745,
+  "status": "active",
+  "benign": true,
+  "origin": "cluster",
+  "hit_count": 118,
+  "n_windows": 23,
+  "first_seen": 1792305820.5651371,
+  "last_seen": 1792306040.5651371,
+  "n_ips": 80,
+  "episodes": 1,
+  "version": 3,
+  "top_ips": [
+   "195.112.201.126",
+   "188.103.212.179",
+   "212.70.37.207",
+   "176.208.56.178",
+   "217.41.195.207"
+  ],
+  "returning": false,
+  "top_features": [
+   {
+    "feature": "iat_cv",
+    "z": 1.82,
+    "value": 1.9801,
+    "baseline": 1.212
+   },
+   {
+    "feature": "log_long_events",
+    "z": 1.55,
+    "value": 1.9459,
+    "baseline": 1.5714
+   },
+   {
+    "feature": "log_bytes_ps",
+    "z": 1.47,
+    "value": 8.4578,
+    "baseline": 7.4058
+   }
+  ],
+  "radar": [
+   {
+    "axis": "log_events_ps",
+    "z": 0.63,
+    "value": 0.5783
+   },
+   {
+    "axis": "log_rate_per_source",
+    "z": 0.83,
+    "value": 0.6022
+   },
+   {
+    "axis": "log_n_sources",
+    "z": -0.3,
+    "value": 0.463
+   },
+   {
+    "axis": "log_bytes_per_flow",
+    "z": 1.0,
+    "value": 0.6224
+   },
+   {
+    "axis": "log_pkts_per_flow",
+    "z": 0.91,
+    "value": 0.6117
+   },
+   {
+    "axis": "log_flow_dur",
+    "z": 0.04,
+    "value": 0.5051
+   },
+   {
+    "axis": "half_open_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "udp_ratio",
+    "z": -1.05,
+    "value": 0.3713
+   },
+   {
+    "axis": "log_uniq_dst_ports",
+    "z": 0.99,
+    "value": 0.6215
+   },
+   {
+    "axis": "log_uniq_dst_ips",
+    "z": 1.08,
+    "value": 0.6314
+   },
+   {
+    "axis": "iat_cv",
+    "z": 1.82,
+    "value": 0.7126
+   },
+   {
+    "axis": "fail_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "web_ratio",
+    "z": 1.12,
+    "value": 0.6367
+   },
+   {
+    "axis": "ssh_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "sensitive_path_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "log_cmd_count",
+    "z": 0.0,
+    "value": 0.5
+   }
+  ]
+ },
+ {
+  "id": "FP-0008",
+  "name": "Normal / benign traffic #5",
+  "category": "benign",
+  "category_name": "Normal / benign traffic",
+  "severity": "info",
+  "confidence": 0.804,
+  "status": "active",
+  "benign": true,
+  "origin": "cluster",
+  "hit_count": 117,
+  "n_windows": 23,
+  "first_seen": 1792305820.5651371,
+  "last_seen": 1792306040.5651371,
+  "n_ips": 80,
+  "episodes": 1,
+  "version": 3,
+  "top_ips": [
+   "178.161.20.222",
+   "23.60.82.8",
+   "77.55.85.109",
+   "5.224.228.110",
+   "78.99.117.164"
+  ],
+  "returning": false,
+  "top_features": [
+   {
+    "feature": "log_syn_ack",
+    "z": -1.81,
+    "value": 0.0,
+    "baseline": 0.3999
+   },
+   {
+    "feature": "log_long_uniq_ports",
+    "z": -1.76,
+    "value": 0.6931,
+    "baseline": 1.1523
+   },
+   {
+    "feature": "dns_ratio",
+    "z": 1.57,
+    "value": 1.0,
+    "baseline": 0.5017
+   }
+  ],
+  "radar": [
+   {
+    "axis": "log_events_ps",
+    "z": -0.41,
+    "value": 0.4494
+   },
+   {
+    "axis": "log_rate_per_source",
+    "z": -0.21,
+    "value": 0.4739
+   },
+   {
+    "axis": "log_n_sources",
+    "z": -0.3,
+    "value": 0.463
+   },
+   {
+    "axis": "log_bytes_per_flow",
+    "z": -0.17,
+    "value": 0.479
+   },
+   {
+    "axis": "log_pkts_per_flow",
+    "z": -0.48,
+    "value": 0.4402
+   },
+   {
+    "axis": "log_flow_dur",
+    "z": -0.32,
+    "value": 0.46
+   },
+   {
+    "axis": "half_open_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "udp_ratio",
+    "z": 1.57,
+    "value": 0.6864
+   },
+   {
+    "axis": "log_uniq_dst_ports",
+    "z": -1.45,
+    "value": 0.3265
+   },
+   {
+    "axis": "log_uniq_dst_ips",
+    "z": -0.36,
+    "value": 0.4548
+   },
+   {
+    "axis": "iat_cv",
+    "z": -0.51,
+    "value": 0.437
+   },
+   {
+    "axis": "fail_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "web_ratio",
+    "z": -1.51,
+    "value": 0.3203
+   },
+   {
+    "axis": "ssh_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "sensitive_path_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "log_cmd_count",
+    "z": 0.0,
+    "value": 0.5
+   }
+  ]
+ },
+ {
+  "id": "FP-0009",
+  "name": "Normal / benign traffic #6",
+  "category": "benign",
+  "category_name": "Normal / benign traffic",
+  "severity": "info",
+  "confidence": 0.835,
+  "status": "active",
+  "benign": true,
+  "origin": "cluster",
+  "hit_count": 117,
+  "n_windows": 22,
+  "first_seen": 1792305810.5651371,
+  "last_seen": 1792306040.5651371,
+  "n_ips": 80,
+  "episodes": 1,
+  "version": 2,
+  "top_ips": [
+   "45.177.137.233",
+   "193.112.244.85",
+   "93.65.105.244",
+   "94.87.231.141",
+   "185.254.32.197"
+  ],
+  "returning": false,
+  "top_features": [
+   {
+    "feature": "reply_ratio",
+    "z": -1.89,
+    "value": 0.2283,
+    "baseline": 0.8036
+   },
+   {
+    "feature": "log_size_mean",
+    "z": -1.43,
+    "value": 5.2507,
+    "baseline": 5.7877
+   },
+   {
+    "feature": "log_bytes_ps",
+    "z": -1.41,
+    "value": 6.3973,
+    "baseline": 7.4058
+   }
+  ],
+  "radar": [
+   {
+    "axis": "log_events_ps",
+    "z": -0.41,
+    "value": 0.4494
+   },
+   {
+    "axis": "log_rate_per_source",
+    "z": -0.21,
+    "value": 0.4739
+   },
+   {
+    "axis": "log_n_sources",
+    "z": -0.3,
+    "value": 0.463
+   },
+   {
+    "axis": "log_bytes_per_flow",
+    "z": -1.2,
+    "value": 0.3545
+   },
+   {
+    "axis": "log_pkts_per_flow",
+    "z": -1.02,
+    "value": 0.375
+   },
+   {
+    "axis": "log_flow_dur",
+    "z": -0.67,
+    "value": 0.4165
+   },
+   {
+    "axis": "half_open_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "udp_ratio",
+    "z": 0.52,
+    "value": 0.5645
+   },
+   {
+    "axis": "log_uniq_dst_ports",
+    "z": -0.02,
+    "value": 0.4974
+   },
+   {
+    "axis": "log_uniq_dst_ips",
+    "z": -0.36,
+    "value": 0.4548
+   },
+   {
+    "axis": "iat_cv",
+    "z": -0.52,
+    "value": 0.4348
+   },
+   {
+    "axis": "fail_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "web_ratio",
+    "z": -0.45,
+    "value": 0.4435
+   },
+   {
+    "axis": "ssh_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "sensitive_path_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "log_cmd_count",
+    "z": 0.0,
+    "value": 0.5
+   }
+  ]
+ },
+ {
+  "id": "FP-0010",
+  "name": "Normal / benign traffic #7",
+  "category": "benign",
+  "category_name": "Normal / benign traffic",
+  "severity": "info",
+  "confidence": 0.743,
+  "status": "active",
+  "benign": true,
+  "origin": "cluster",
+  "hit_count": 38,
+  "n_windows": 7,
+  "first_seen": 1792305820.5651371,
+  "last_seen": 1792306035.5651371,
+  "n_ips": 76,
+  "episodes": 1,
+  "version": 1,
+  "top_ips": [
+   "46.135.235.201",
+   "45.153.84.141",
+   "78.34.227.207",
+   "31.103.124.4",
+   "109.174.225.51"
+  ],
+  "returning": false,
+  "top_features": [
+   {
+    "feature": "log_iat_mean",
+    "z": 2.74,
+    "value": 1.5521,
+    "baseline": 0.6633
+   },
+   {
+    "feature": "log_iat_std",
+    "z": 2.54,
+    "value": 1.5509,
+    "baseline": 0.7348
+   },
+   {
+    "feature": "web_ratio",
+    "z": 1.65,
+    "value": 1.0,
+    "baseline": 0.4774
+   }
+  ],
+  "radar": [
+   {
+    "axis": "log_events_ps",
+    "z": -0.41,
+    "value": 0.4494
+   },
+   {
+    "axis": "log_rate_per_source",
+    "z": -0.82,
+    "value": 0.3987
+   },
+   {
+    "axis": "log_n_sources",
+    "z": 0.76,
+    "value": 0.5936
+   },
+   {
+    "axis": "log_bytes_per_flow",
+    "z": 1.01,
+    "value": 0.6235
+   },
+   {
+    "axis": "log_pkts_per_flow",
+    "z": 0.23,
+    "value": 0.5293
+   },
+   {
+    "axis": "log_flow_dur",
+    "z": 0.98,
+    "value": 0.6207
+   },
+   {
+    "axis": "half_open_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "udp_ratio",
+    "z": -1.58,
+    "value": 0.3124
+   },
+   {
+    "axis": "log_uniq_dst_ports",
+    "z": -1.45,
+    "value": 0.3265
+   },
+   {
+    "axis": "log_uniq_dst_ips",
+    "z": -0.36,
+    "value": 0.4548
+   },
+   {
+    "axis": "iat_cv",
+    "z": -0.5,
+    "value": 0.4372
+   },
+   {
+    "axis": "fail_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "web_ratio",
+    "z": 1.65,
+    "value": 0.695
+   },
+   {
+    "axis": "ssh_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "sensitive_path_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "log_cmd_count",
+    "z": 0.0,
+    "value": 0.5
+   }
+  ]
+ },
+ {
+  "id": "FP-0011",
+  "name": "Normal / benign traffic #8",
+  "category": "benign",
+  "category_name": "Normal / benign traffic",
+  "severity": "info",
+  "confidence": 0.922,
+  "status": "active",
+  "benign": true,
+  "origin": "cluster",
+  "hit_count": 118,
+  "n_windows": 23,
+  "first_seen": 1792305810.5651371,
+  "last_seen": 1792306040.5651371,
+  "n_ips": 80,
+  "episodes": 1,
+  "version": 2,
+  "top_ips": [
+   "141.141.156.164",
+   "188.99.95.166",
+   "188.165.136.52",
+   "104.14.161.41",
+   "46.146.201.18"
+  ],
+  "returning": false,
+  "top_features": [
+   {
+    "feature": "log_flow_dur",
+    "z": 1.12,
+    "value": 1.8731,
+    "baseline": 1.6501
+   },
+   {
+    "feature": "log_uniq_dst_ports",
+    "z": 0.99,
+    "value": 1.3863,
+    "baseline": 1.1044
+   },
+   {
+    "feature": "log_long_uniq_ports",
+    "z": 0.9,
+    "value": 1.3863,
+    "baseline": 1.1523
+   }
+  ],
+  "radar": [
+   {
+    "axis": "log_events_ps",
+    "z": -0.04,
+    "value": 0.4955
+   },
+   {
+    "axis": "log_rate_per_source",
+    "z": 0.16,
+    "value": 0.5202
+   },
+   {
+    "axis": "log_n_sources",
+    "z": -0.3,
+    "value": 0.463
+   },
+   {
+    "axis": "log_bytes_per_flow",
+    "z": -0.15,
+    "value": 0.4812
+   },
+   {
+    "axis": "log_pkts_per_flow",
+    "z": -0.39,
+    "value": 0.4519
+   },
+   {
+    "axis": "log_flow_dur",
+    "z": 1.12,
+    "value": 0.6359
+   },
+   {
+    "axis": "half_open_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "udp_ratio",
+    "z": -0.01,
+    "value": 0.4993
+   },
+   {
+    "axis": "log_uniq_dst_ports",
+    "z": 0.99,
+    "value": 0.6215
+   },
+   {
+    "axis": "log_uniq_dst_ips",
+    "z": -0.36,
+    "value": 0.4548
+   },
+   {
+    "axis": "iat_cv",
+    "z": 0.47,
+    "value": 0.5586
+   },
+   {
+    "axis": "fail_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "web_ratio",
+    "z": 0.07,
+    "value": 0.5089
+   },
+   {
+    "axis": "ssh_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "sensitive_path_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "log_cmd_count",
+    "z": 0.0,
+    "value": 0.5
+   }
+  ]
+ },
+ {
+  "id": "FP-0012",
+  "name": "Normal / benign traffic #9",
+  "category": "benign",
+  "category_name": "Normal / benign traffic",
+  "severity": "info",
+  "confidence": 0.879,
+  "status": "active",
+  "benign": true,
+  "origin": "cluster",
+  "hit_count": 118,
+  "n_windows": 23,
+  "first_seen": 1792305810.5651371,
+  "last_seen": 1792306040.5651371,
+  "n_ips": 80,
+  "episodes": 1,
+  "version": 2,
+  "top_ips": [
+   "77.37.37.164",
+   "188.159.23.47",
+   "154.227.84.121",
+   "141.242.138.42",
+   "195.253.235.115"
+  ],
+  "returning": false,
+  "top_features": [
+   {
+    "feature": "reply_ratio",
+    "z": 1.17,
+    "value": 1.1602,
+    "baseline": 0.8036
+   },
+   {
+    "feature": "log_pkts_per_flow",
+    "z": 0.86,
+    "value": 2.8332,
+    "baseline": 2.6611
+   },
+   {
+    "feature": "log_size_std",
+    "z": 0.83,
+    "value": 5.4369,
+    "baseline": 4.7093
+   }
+  ],
+  "radar": [
+   {
+    "axis": "log_events_ps",
+    "z": -0.41,
+    "value": 0.4494
+   },
+   {
+    "axis": "log_rate_per_source",
+    "z": -0.21,
+    "value": 0.4739
+   },
+   {
+    "axis": "log_n_sources",
+    "z": -0.3,
+    "value": 0.463
+   },
+   {
+    "axis": "log_bytes_per_flow",
+    "z": 0.65,
+    "value": 0.581
+   },
+   {
+    "axis": "log_pkts_per_flow",
+    "z": 0.86,
+    "value": 0.6059
+   },
+   {
+    "axis": "log_flow_dur",
+    "z": 0.06,
+    "value": 0.5077
+   },
+   {
+    "axis": "half_open_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "udp_ratio",
+    "z": -0.53,
+    "value": 0.4342
+   },
+   {
+    "axis": "log_uniq_dst_ports",
+    "z": -0.02,
+    "value": 0.4974
+   },
+   {
+    "axis": "log_uniq_dst_ips",
+    "z": -0.36,
+    "value": 0.4548
+   },
+   {
+    "axis": "iat_cv",
+    "z": -0.51,
+    "value": 0.4364
+   },
+   {
+    "axis": "fail_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "web_ratio",
+    "z": 0.6,
+    "value": 0.574
+   },
+   {
+    "axis": "ssh_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "sensitive_path_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "log_cmd_count",
+    "z": 0.0,
+    "value": 0.5
+   }
+  ]
+ },
+ {
+  "id": "FP-0013",
+  "name": "Candidate: SYN flood (FP-0013)",
+  "category": "syn_flood",
+  "category_name": "SYN flood",
+  "severity": "high",
+  "confidence": 0.75,
+  "status": "active",
+  "benign": false,
+  "origin": "anomaly",
+  "hit_count": 7,
+  "n_windows": 12,
+  "first_seen": 1792305900.5651371,
+  "last_seen": 1792305950.5651371,
+  "n_ips": 1,
+  "episodes": 1,
+  "version": 8,
+  "top_ips": [
+   "217.0.158.92"
+  ],
+  "returning": false,
+  "top_features": [
+   {
+    "feature": "log_syn_ack",
+    "z": 32.04,
+    "value": 7.4743,
+    "baseline": 0.3999
+   },
+   {
+    "feature": "log_long_events",
+    "z": 23.74,
+    "value": 7.3229,
+    "baseline": 1.5714
+   },
+   {
+    "feature": "log_rate_per_source",
+    "z": 20.93,
+    "value": 4.4897,
+    "baseline": 0.3041
+   }
+  ],
+  "radar": [
+   {
+    "axis": "log_events_ps",
+    "z": 20.73,
+    "value": 0.9975
+   },
+   {
+    "axis": "log_rate_per_source",
+    "z": 20.93,
+    "value": 0.9975
+   },
+   {
+    "axis": "log_n_sources",
+    "z": -0.3,
+    "value": 0.463
+   },
+   {
+    "axis": "log_bytes_per_flow",
+    "z": -13.41,
+    "value": 0.0025
+   },
+   {
+    "axis": "log_pkts_per_flow",
+    "z": -7.81,
+    "value": 0.0197
+   },
+   {
+    "axis": "log_flow_dur",
+    "z": -8.25,
+    "value": 0.0159
+   },
+   {
+    "axis": "half_open_ratio",
+    "z": 5.0,
+    "value": 0.9241
+   },
+   {
+    "axis": "udp_ratio",
+    "z": -1.58,
+    "value": 0.3124
+   },
+   {
+    "axis": "log_uniq_dst_ports",
+    "z": -0.02,
+    "value": 0.4974
+   },
+   {
+    "axis": "log_uniq_dst_ips",
+    "z": -2.39,
+    "value": 0.2324
+   },
+   {
+    "axis": "iat_cv",
+    "z": -2.87,
+    "value": 0.1927
+   },
+   {
+    "axis": "fail_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "web_ratio",
+    "z": 1.65,
+    "value": 0.695
+   },
+   {
+    "axis": "ssh_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "sensitive_path_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "log_cmd_count",
+    "z": 0.0,
+    "value": 0.5
+   }
+  ]
+ },
+ {
+  "id": "FP-0014",
+  "name": "SYN flood #2",
+  "category": "syn_flood",
+  "category_name": "SYN flood",
+  "severity": "high",
+  "confidence": 0.75,
+  "status": "active",
+  "benign": false,
+  "origin": "anomaly",
+  "hit_count": 10,
+  "n_windows": 12,
+  "first_seen": 1792305930.5651371,
+  "last_seen": 1792305985.5651371,
+  "n_ips": 1,
+  "episodes": 1,
+  "version": 7,
+  "top_ips": [
+   "192.0.2.66"
+  ],
+  "returning": false,
+  "top_features": [
+   {
+    "feature": "log_pkts_per_flow",
+    "z": -9.84,
+    "value": 0.6931,
+    "baseline": 2.6611
+   },
+   {
+    "feature": "log_syn_ack",
+    "z": 9.52,
+    "value": 2.5025,
+    "baseline": 0.3999
+   },
+   {
+    "feature": "log_bytes_per_flow",
+    "z": -7.29,
+    "value": 3.8067,
+    "baseline": 8.3462
+   }
+  ],
+  "radar": [
+   {
+    "axis": "log_events_ps",
+    "z": 2.07,
+    "value": 0.7382
+   },
+   {
+    "axis": "log_rate_per_source",
+    "z": 2.27,
+    "value": 0.7568
+   },
+   {
+    "axis": "log_n_sources",
+    "z": -0.3,
+    "value": 0.463
+   },
+   {
+    "axis": "log_bytes_per_flow",
+    "z": -7.29,
+    "value": 0.0254
+   },
+   {
+    "axis": "log_pkts_per_flow",
+    "z": -9.84,
+    "value": 0.0072
+   },
+   {
+    "axis": "log_flow_dur",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "half_open_ratio",
+    "z": 5.0,
+    "value": 0.9241
+   },
+   {
+    "axis": "udp_ratio",
+    "z": -1.58,
+    "value": 0.3124
+   },
+   {
+    "axis": "log_uniq_dst_ports",
+    "z": 2.96,
+    "value": 0.8147
+   },
+   {
+    "axis": "log_uniq_dst_ips",
+    "z": -2.39,
+    "value": 0.2324
+   },
+   {
+    "axis": "iat_cv",
+    "z": -1.21,
+    "value": 0.3528
+   },
+   {
+    "axis": "fail_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "web_ratio",
+    "z": -1.19,
+    "value": 0.3558
+   },
+   {
+    "axis": "ssh_ratio",
+    "z": 0.46,
+    "value": 0.5577
+   },
+   {
+    "axis": "sensitive_path_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "log_cmd_count",
+    "z": 0.0,
+    "value": 0.5
+   }
+  ]
+ },
+ {
+  "id": "FP-0015",
+  "name": "Unknown anomaly #1",
+  "category": "unknown_anomaly",
+  "category_name": "Unknown anomaly",
+  "severity": "medium",
+  "confidence": 0.326,
+  "status": "active",
+  "benign": false,
+  "origin": "cluster",
+  "hit_count": 22,
+  "n_windows": 5,
+  "first_seen": 1792305930.5651371,
+  "last_seen": 1792305995.5651371,
+  "n_ips": 2,
+  "episodes": 1,
+  "version": 1,
+  "top_ips": [
+   "192.0.2.201",
+   "203.0.113.99"
+  ],
+  "returning": false,
+  "top_features": [
+   {
+    "feature": "log_uniq_passwords",
+    "z": 8.5,
+    "value": 1.7002,
+    "baseline": 0.0
+   },
+   {
+    "feature": "log_uniq_users",
+    "z": 6.04,
+    "value": 1.2071,
+    "baseline": 0.0
+   },
+   {
+    "feature": "fail_ratio",
+    "z": 5.0,
+    "value": 1.0,
+    "baseline": 0.0
+   }
+  ],
+  "radar": [
+   {
+    "axis": "log_events_ps",
+    "z": 0.46,
+    "value": 0.5576
+   },
+   {
+    "axis": "log_rate_per_source",
+    "z": 0.66,
+    "value": 0.5818
+   },
+   {
+    "axis": "log_n_sources",
+    "z": -0.3,
+    "value": 0.463
+   },
+   {
+    "axis": "log_bytes_per_flow",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "log_pkts_per_flow",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "log_flow_dur",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "half_open_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "udp_ratio",
+    "z": -1.58,
+    "value": 0.3124
+   },
+   {
+    "axis": "log_uniq_dst_ports",
+    "z": -1.45,
+    "value": 0.3265
+   },
+   {
+    "axis": "log_uniq_dst_ips",
+    "z": -2.39,
+    "value": 0.2324
+   },
+   {
+    "axis": "iat_cv",
+    "z": -1.58,
+    "value": 0.3127
+   },
+   {
+    "axis": "fail_ratio",
+    "z": 5.0,
+    "value": 0.9241
+   },
+   {
+    "axis": "web_ratio",
+    "z": -1.51,
+    "value": 0.3203
+   },
+   {
+    "axis": "ssh_ratio",
+    "z": 2.8,
+    "value": 0.8026
+   },
+   {
+    "axis": "sensitive_path_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "log_cmd_count",
+    "z": 0.0,
+    "value": 0.5
+   }
+  ]
+ },
+ {
+  "id": "FP-0016",
+  "name": "Web vuln probing #1",
+  "category": "web_vuln_probe",
+  "category_name": "Web vuln probing",
+  "severity": "medium",
+  "confidence": 1.0,
+  "status": "active",
+  "benign": false,
+  "origin": "cluster",
+  "hit_count": 5,
+  "n_windows": 5,
+  "first_seen": 1792305935.5651371,
+  "last_seen": 1792305965.5651371,
+  "n_ips": 1,
+  "episodes": 1,
+  "version": 1,
+  "top_ips": [
+   "198.51.100.150"
+  ],
+  "returning": false,
+  "top_features": [
+   {
+    "feature": "log_uniq_paths",
+    "z": 9.73,
+    "value": 1.9459,
+    "baseline": 0.0
+   },
+   {
+    "feature": "fail_ratio",
+    "z": 5.0,
+    "value": 1.0,
+    "baseline": 0.0
+   },
+   {
+    "feature": "http_ratio",
+    "z": 5.0,
+    "value": 1.0,
+    "baseline": 0.0
+   }
+  ],
+  "radar": [
+   {
+    "axis": "log_events_ps",
+    "z": 0.86,
+    "value": 0.6064
+   },
+   {
+    "axis": "log_rate_per_source",
+    "z": 1.06,
+    "value": 0.6297
+   },
+   {
+    "axis": "log_n_sources",
+    "z": -0.3,
+    "value": 0.463
+   },
+   {
+    "axis": "log_bytes_per_flow",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "log_pkts_per_flow",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "log_flow_dur",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "half_open_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "udp_ratio",
+    "z": -1.58,
+    "value": 0.3124
+   },
+   {
+    "axis": "log_uniq_dst_ports",
+    "z": -1.45,
+    "value": 0.3265
+   },
+   {
+    "axis": "log_uniq_dst_ips",
+    "z": -2.39,
+    "value": 0.2324
+   },
+   {
+    "axis": "iat_cv",
+    "z": -0.61,
+    "value": 0.4249
+   },
+   {
+    "axis": "fail_ratio",
+    "z": 5.0,
+    "value": 0.9241
+   },
+   {
+    "axis": "web_ratio",
+    "z": 1.65,
+    "value": 0.695
+   },
+   {
+    "axis": "ssh_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "sensitive_path_ratio",
+    "z": 3.35,
+    "value": 0.8422
+   },
+   {
+    "axis": "log_cmd_count",
+    "z": 0.0,
+    "value": 0.5
+   }
+  ]
+ },
+ {
+  "id": "FP-0017",
+  "name": "SSH brute force #2",
+  "category": "ssh_bruteforce",
+  "category_name": "SSH brute force",
+  "severity": "high",
+  "confidence": 1.0,
+  "status": "active",
+  "benign": false,
+  "origin": "cluster",
+  "hit_count": 8,
+  "n_windows": 7,
+  "first_seen": 1792305940.5651371,
+  "last_seen": 1792305970.5651371,
+  "n_ips": 2,
+  "episodes": 1,
+  "version": 1,
+  "top_ips": [
+   "198.51.100.77",
+   "203.0.113.45"
+  ],
+  "returning": false,
+  "top_features": [
+   {
+    "feature": "log_uniq_passwords",
+    "z": 10.73,
+    "value": 2.1454,
+    "baseline": 0.0
+   },
+   {
+    "feature": "log_flow_dur",
+    "z": 8.06,
+    "value": 3.2619,
+    "baseline": 1.6501
+   },
+   {
+    "feature": "log_cmd_count",
+    "z": 5.82,
+    "value": 1.1645,
+    "baseline": 0.0
+   }
+  ],
+  "radar": [
+   {
+    "axis": "log_events_ps",
+    "z": 2.6,
+    "value": 0.7856
+   },
+   {
+    "axis": "log_rate_per_source",
+    "z": 2.8,
+    "value": 0.8018
+   },
+   {
+    "axis": "log_n_sources",
+    "z": -0.3,
+    "value": 0.463
+   },
+   {
+    "axis": "log_bytes_per_flow",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "log_pkts_per_flow",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "log_flow_dur",
+    "z": 8.06,
+    "value": 0.9825
+   },
+   {
+    "axis": "half_open_ratio",
+    "z": 5.0,
+    "value": 0.9241
+   },
+   {
+    "axis": "udp_ratio",
+    "z": -1.58,
+    "value": 0.3124
+   },
+   {
+    "axis": "log_uniq_dst_ports",
+    "z": -1.45,
+    "value": 0.3265
+   },
+   {
+    "axis": "log_uniq_dst_ips",
+    "z": -2.39,
+    "value": 0.2324
+   },
+   {
+    "axis": "iat_cv",
+    "z": -0.69,
+    "value": 0.4142
+   },
+   {
+    "axis": "fail_ratio",
+    "z": 4.65,
+    "value": 0.9109
+   },
+   {
+    "axis": "web_ratio",
+    "z": -1.51,
+    "value": 0.3203
+   },
+   {
+    "axis": "ssh_ratio",
+    "z": 5.0,
+    "value": 0.9241
+   },
+   {
+    "axis": "sensitive_path_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "log_cmd_count",
+    "z": 5.82,
+    "value": 0.9484
+   }
+  ]
+ },
+ {
+  "id": "FP-0018",
+  "name": "Candidate: Port scan (fast) (FP-0018)",
+  "category": "port_scan_fast",
+  "category_name": "Port scan (fast)",
+  "severity": "medium",
+  "confidence": 1.0,
+  "status": "active",
+  "benign": false,
+  "origin": "anomaly",
+  "hit_count": 8,
+  "n_windows": 11,
+  "first_seen": 1792305960.5651371,
+  "last_seen": 1792306005.5651371,
+  "n_ips": 1,
+  "episodes": 1,
+  "version": 7,
+  "top_ips": [
+   "154.239.112.170"
+  ],
+  "returning": false,
+  "top_features": [
+   {
+    "feature": "log_syn_ack",
+    "z": 14.4,
+    "value": 3.5783,
+    "baseline": 0.3999
+   },
+   {
+    "feature": "log_long_events",
+    "z": 10.79,
+    "value": 4.1847,
+    "baseline": 1.5714
+   },
+   {
+    "feature": "log_pkts_per_flow",
+    "z": -9.84,
+    "value": 0.6931,
+    "baseline": 2.6611
+   }
+  ],
+  "radar": [
+   {
+    "axis": "log_events_ps",
+    "z": 5.8,
+    "value": 0.9478
+   },
+   {
+    "axis": "log_rate_per_source",
+    "z": 6.0,
+    "value": 0.9525
+   },
+   {
+    "axis": "log_n_sources",
+    "z": -0.3,
+    "value": 0.463
+   },
+   {
+    "axis": "log_bytes_per_flow",
+    "z": -7.44,
+    "value": 0.0236
+   },
+   {
+    "axis": "log_pkts_per_flow",
+    "z": -9.84,
+    "value": 0.0072
+   },
+   {
+    "axis": "log_flow_dur",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "half_open_ratio",
+    "z": 5.0,
+    "value": 0.9241
+   },
+   {
+    "axis": "udp_ratio",
+    "z": -1.58,
+    "value": 0.3124
+   },
+   {
+    "axis": "log_uniq_dst_ports",
+    "z": -1.45,
+    "value": 0.3265
+   },
+   {
+    "axis": "log_uniq_dst_ips",
+    "z": 8.87,
+    "value": 0.9883
+   },
+   {
+    "axis": "iat_cv",
+    "z": -2.87,
+    "value": 0.1927
+   },
+   {
+    "axis": "fail_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "web_ratio",
+    "z": -1.51,
+    "value": 0.3203
+   },
+   {
+    "axis": "ssh_ratio",
+    "z": 5.0,
+    "value": 0.9241
+   },
+   {
+    "axis": "sensitive_path_ratio",
+    "z": 0.0,
+    "value": 0.5
+   },
+   {
+    "axis": "log_cmd_count",
+    "z": 0.0,
+    "value": 0.5
+   }
+  ]
+ }
+]

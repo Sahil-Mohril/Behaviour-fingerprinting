@@ -306,12 +306,20 @@ Backend coverage:
 ## Paper and experiments
 
 `paper/main.tex` is an IEEE-format paper describing this system (IEEEtran, compiles with
-pdfLaTeX/XeLaTeX or Tectonic; figures use TikZ/pgfplots). Every number in it comes from
-`backend/experiments/paper_experiments.py`, which writes `paper/results/results.json` and the
-demo timeline CSV:
+pdfLaTeX/XeLaTeX or Tectonic; figures use TikZ/pgfplots). Its numbers come from two scripts:
+
+- `backend/experiments/paper_experiments.py` (headless sweeps and ablations, E1–E6) writes
+  `paper/results/results.json` and the demo timeline CSV.
+- `paper/tools/capture_site.py` (W1–W2) drives the running web app on `localhost:5173`: it runs
+  the demo and the mixed replay through the API, saves the Evaluation/Overview/Alerts/Rules JSON
+  to `paper/results/web_*.json` and the screenshots to `paper/figures/`. It needs
+  `pip install playwright` and Edge or Chromium. `paper/tools/make_figs.py` then turns the saved
+  JSON into the TikZ confusion matrices (`paper/figures/cm_*.tex`).
 
 ```bash
 cd backend && python -m experiments.paper_experiments    # ~5 minutes on a laptop
+docker compose up -d                                     # then, from paper/:
+python tools/capture_site.py . && python tools/make_figs.py .
 ```
 
 The published numbers were produced on the bundled fixtures. After adding the real datasets to

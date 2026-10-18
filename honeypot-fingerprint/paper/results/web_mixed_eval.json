@@ -1,0 +1,414 @@
+{
+ "windows_evaluated": 805,
+ "online": {
+  "confusion": {
+   "rows": [
+    "benign",
+    "botnet_c2",
+    "port_scan_fast",
+    "ssh_bruteforce",
+    "syn_flood",
+    "udp_flood"
+   ],
+   "cols": [
+    "benign",
+    "botnet_c2",
+    "port_scan_fast",
+    "ssh_bruteforce",
+    "syn_flood",
+    "udp_flood",
+    "unknown_anomaly",
+    "unmatched"
+   ],
+   "matrix": [
+    [
+     609,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     147
+    ],
+    [
+     0,
+     2,
+     0,
+     0,
+     0,
+     0,
+     4,
+     1
+    ],
+    [
+     0,
+     0,
+     2,
+     0,
+     0,
+     0,
+     6,
+     0
+    ],
+    [
+     0,
+     0,
+     0,
+     3,
+     0,
+     0,
+     5,
+     9
+    ],
+    [
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     6,
+     0
+    ],
+    [
+     0,
+     0,
+     0,
+     0,
+     0,
+     3,
+     7,
+     0
+    ]
+   ]
+  },
+  "per_class": {
+   "benign": {
+    "precision": 1.0,
+    "recall": 0.806,
+    "f1": 0.892,
+    "support": 756
+   },
+   "botnet_c2": {
+    "precision": 1.0,
+    "recall": 0.286,
+    "f1": 0.444,
+    "support": 7
+   },
+   "port_scan_fast": {
+    "precision": 1.0,
+    "recall": 0.25,
+    "f1": 0.4,
+    "support": 8
+   },
+   "ssh_bruteforce": {
+    "precision": 1.0,
+    "recall": 0.176,
+    "f1": 0.3,
+    "support": 17
+   },
+   "syn_flood": {
+    "precision": 1.0,
+    "recall": 0.143,
+    "f1": 0.25,
+    "support": 7
+   },
+   "udp_flood": {
+    "precision": 1.0,
+    "recall": 0.3,
+    "f1": 0.462,
+    "support": 10
+   }
+  },
+  "macro": {
+   "precision": 1.0,
+   "recall": 0.327,
+   "f1": 0.458
+  },
+  "accuracy": 0.77
+ },
+ "final": {
+  "confusion": {
+   "rows": [
+    "benign",
+    "botnet_c2",
+    "port_scan_fast",
+    "ssh_bruteforce",
+    "syn_flood",
+    "udp_flood"
+   ],
+   "cols": [
+    "benign",
+    "botnet_c2",
+    "port_scan_fast",
+    "ssh_bruteforce",
+    "syn_flood",
+    "udp_flood",
+    "unmatched"
+   ],
+   "matrix": [
+    [
+     755,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     0,
+     7,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     8,
+     0,
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0,
+     16,
+     0,
+     0,
+     1
+    ],
+    [
+     0,
+     0,
+     0,
+     0,
+     7,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0,
+     0,
+     0,
+     10,
+     0
+    ]
+   ]
+  },
+  "per_class": {
+   "benign": {
+    "precision": 1.0,
+    "recall": 0.999,
+    "f1": 0.999,
+    "support": 756
+   },
+   "botnet_c2": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "support": 7
+   },
+   "port_scan_fast": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "support": 8
+   },
+   "ssh_bruteforce": {
+    "precision": 1.0,
+    "recall": 0.941,
+    "f1": 0.97,
+    "support": 17
+   },
+   "syn_flood": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "support": 7
+   },
+   "udp_flood": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "support": 10
+   }
+  },
+  "macro": {
+   "precision": 1.0,
+   "recall": 0.99,
+   "f1": 0.995
+  },
+  "accuracy": 0.998
+ },
+ "binary": {
+  "precision": 1.0,
+  "recall": 0.796,
+  "f1": 0.886,
+  "tp": 39,
+  "fp": 0,
+  "fn": 10,
+  "tn": 756
+ },
+ "mean_time_to_detect": 10.0,
+ "mean_time_to_rule": 30.0,
+ "campaigns": [
+  {
+   "campaign_id": "cicddos2019_sample.csv#3:Syn",
+   "label": "Syn",
+   "behaviour": "syn_flood",
+   "events": 3000,
+   "dropped": 0,
+   "n_ips": 1,
+   "time_to_detect": 5.0,
+   "time_to_rule": 35.0,
+   "fingerprints": [
+    "FP-0013"
+   ],
+   "parent_id": null
+  },
+  {
+   "campaign_id": "cicddos2019_sample.csv#4:DrDoS_DNS",
+   "label": "DrDoS_DNS",
+   "behaviour": "udp_flood",
+   "events": 2250,
+   "dropped": 0,
+   "n_ips": 1,
+   "time_to_detect": 5.0,
+   "time_to_rule": 40.0,
+   "fingerprints": [
+    "FP-0003"
+   ],
+   "parent_id": null
+  },
+  {
+   "campaign_id": "cicids2017_sample.csv#1:BENIGN",
+   "label": "BENIGN",
+   "behaviour": "benign",
+   "events": 1600,
+   "dropped": 0,
+   "n_ips": 480,
+   "time_to_detect": null,
+   "time_to_rule": null,
+   "fingerprints": [
+    "FP-0007",
+    "FP-0008",
+    "FP-0011"
+   ],
+   "parent_id": null
+  },
+  {
+   "campaign_id": "cicids2017_sample.csv#2:SSH-Patator",
+   "label": "SSH-Patator",
+   "behaviour": "ssh_bruteforce",
+   "events": 96,
+   "dropped": 30,
+   "n_ips": 1,
+   "time_to_detect": 10.0,
+   "time_to_rule": 35.0,
+   "fingerprints": [
+    "FP-0002"
+   ],
+   "parent_id": null
+  },
+  {
+   "campaign_id": "cowrie_sample.json#7:ssh_bruteforce",
+   "label": "ssh_bruteforce",
+   "behaviour": "ssh_bruteforce",
+   "events": 168,
+   "dropped": 113,
+   "n_ips": 2,
+   "time_to_detect": 25.0,
+   "time_to_rule": 20.0,
+   "fingerprints": [
+    "FP-0017"
+   ],
+   "parent_id": null
+  },
+  {
+   "campaign_id": "opencanary_sample.json#8:unlabelled",
+   "label": "",
+   "behaviour": "unlabelled",
+   "events": 162,
+   "dropped": 18,
+   "n_ips": 5,
+   "time_to_detect": null,
+   "time_to_rule": 15.0,
+   "fingerprints": [],
+   "parent_id": null
+  },
+  {
+   "campaign_id": "zeek_conn_labeled.log#5:C&C-HeartBeat",
+   "label": "C&C-HeartBeat",
+   "behaviour": "botnet_c2",
+   "events": 72,
+   "dropped": 34,
+   "n_ips": 1,
+   "time_to_detect": 10.0,
+   "time_to_rule": 30.0,
+   "fingerprints": [
+    "FP-0001"
+   ],
+   "parent_id": null
+  },
+  {
+   "campaign_id": "zeek_conn_labeled.log#6:PartOfAHorizontalPortScan",
+   "label": "PartOfAHorizontalPortScan",
+   "behaviour": "port_scan_fast",
+   "events": 180,
+   "dropped": 48,
+   "n_ips": 1,
+   "time_to_detect": 5.0,
+   "time_to_rule": 35.0,
+   "fingerprints": [
+    "FP-0018"
+   ],
+   "parent_id": null
+  }
+ ],
+ "returning": {
+  "replays": 0,
+  "recognised": 0,
+  "alerted": 0,
+  "rate": null,
+  "alert_rate": null,
+  "details": []
+ },
+ "dropped_by_label": {
+  "botnet_c2": 34,
+  "ssh_bruteforce": 143,
+  "unlabelled": 18,
+  "port_scan_fast": 48
+ },
+ "category_names": {
+  "benign": "Normal / benign traffic",
+  "crawler": "Search-engine crawler",
+  "scraper": "Aggressive scraper",
+  "http_flood": "HTTP flood (L7 DoS/DDoS)",
+  "syn_flood": "SYN flood",
+  "udp_flood": "UDP flood / amplification",
+  "icmp_flood": "ICMP flood",
+  "slowloris": "Slowloris / low-and-slow",
+  "port_scan_fast": "Port scan (fast)",
+  "port_scan_slow": "Port scan (stealthy)",
+  "ssh_bruteforce": "SSH brute force",
+  "ftp_bruteforce": "FTP brute force",
+  "web_bruteforce": "Web login brute force",
+  "credential_stuffing": "Credential stuffing",
+  "post_login_shell": "Post-login shell activity",
+  "web_vuln_probe": "Web vuln probing",
+  "botnet_c2": "Botnet / C2 beaconing",
+  "infiltration": "Infiltration / exploit",
+  "malware_download": "Malware download",
+  "unknown_anomaly": "Unknown anomaly",
+  "unmatched": "Unclassified"
+ }
+}

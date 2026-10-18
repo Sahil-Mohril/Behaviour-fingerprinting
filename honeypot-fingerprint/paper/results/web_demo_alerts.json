@@ -1,0 +1,308 @@
+[
+ {
+  "id": "AL-00005",
+  "type": "returning",
+  "title": "Returning behaviour: SSH brute force #1",
+  "fp_id": "FP-0010",
+  "fp_name": "SSH brute force #1",
+  "category": "ssh_bruteforce",
+  "severity": "high",
+  "base_severity": "high",
+  "first_seen": 1792305892.6101794,
+  "last_seen": 1792305897.6101794,
+  "count": 2,
+  "status": "open",
+  "ips": [
+   "80.13.221.214"
+  ],
+  "entity": "ip:80.13.221.214",
+  "score": 0.9379749119447438,
+  "breakdown": {
+   "score": 0.938,
+   "numeric": 0.8966,
+   "categorical": 1.0,
+   "weights": {
+    "numeric": 0.6,
+    "categorical": 0.4
+   },
+   "threshold": 0.85,
+   "numeric_detail": {
+    "cosine": 0.8966248532412396,
+    "anchor_share": 0.018861468768429444,
+    "top_shared": [
+     {
+      "feature": "log_pkts_per_flow",
+      "contribution": 0.1493,
+      "live_z": 5.62,
+      "fp_z": 5.64
+     },
+     {
+      "feature": "burstiness",
+      "contribution": 0.1295,
+      "live_z": -5.29,
+      "fp_z": -5.19
+     },
+     {
+      "feature": "ssh_ratio",
+      "contribution": 0.1179,
+      "live_z": 5.0,
+      "fp_z": 5.0
+     },
+     {
+      "feature": "log_size_std",
+      "contribution": 0.1108,
+      "live_z": -5.22,
+      "fp_z": -4.5
+     },
+     {
+      "feature": "log_pkts_ps",
+      "contribution": 0.0606,
+      "live_z": 2.72,
+      "fp_z": 4.72
+     }
+    ],
+    "top_divergent": [
+     {
+      "feature": "log_long_events",
+      "live_z": 0.8,
+      "fp_z": 5.47
+     },
+     {
+      "feature": "src_port_diversity",
+      "live_z": 0.08,
+      "fp_z": -2.54
+     },
+     {
+      "feature": "log_pkts_ps",
+      "live_z": 2.72,
+      "fp_z": 4.72
+     }
+    ]
+   },
+   "categorical_detail": {
+    "per_family": {
+     "svc": 1.0,
+     "port": 1.0,
+     "flags": 1.0,
+     "size": 1.0
+    },
+    "shared": [
+     "svc:TCP/ssh/flow",
+     "port:22",
+     "port:nports:1",
+     "flags:SAF",
+     "size:2^6"
+    ],
+    "novel": []
+   }
+  },
+  "explanation": "Behaviour FP-0010 seen in an earlier episode is back from 1 new source(s) with no overlap with previous sources. ip:80.13.221.214 matched FP-0010 'SSH brute force #1' with score 0.94; = 0.60x0.90 (numeric cosine) + 0.40x1.00 (trait containment); strongest shared features: log_pkts_per_flow (z +5.6 vs +5.6), burstiness (z -5.3 vs -5.2), ssh_ratio (z +5.0 vs +5.0); known traits: svc:TCP/ssh/flow, port:22, port:nports:1, flags:SAF.",
+  "episode_id": "FP-0010/E2",
+  "rule_ids": [
+   "R-0002"
+  ],
+  "escalations": []
+ },
+ {
+  "id": "AL-00004",
+  "type": "match",
+  "title": "SSH brute force matched FP-0010",
+  "fp_id": "FP-0010",
+  "fp_name": "SSH brute force #1",
+  "category": "ssh_bruteforce",
+  "severity": "high",
+  "base_severity": "high",
+  "first_seen": 1792305842.6101794,
+  "last_seen": 1792305862.6101794,
+  "count": 5,
+  "status": "open",
+  "ips": [
+   "172.16.0.1"
+  ],
+  "entity": "ip:172.16.0.1",
+  "score": 0.9959583828418442,
+  "breakdown": {
+   "score": 0.996,
+   "numeric": 0.9933,
+   "categorical": 1.0,
+   "weights": {
+    "numeric": 0.6,
+    "categorical": 0.4
+   },
+   "threshold": 0.85,
+   "numeric_detail": {
+    "cosine": 0.9932639714030735,
+    "anchor_share": 0.015543926590553443,
+    "top_shared": [
+     {
+      "feature": "log_long_events",
+      "contribution": 0.1508,
+      "live_z": 7.31,
+      "fp_z": 5.31
+     },
+     {
+      "feature": "log_pkts_per_flow",
+      "contribution": 0.123,
+      "live_z": 5.61,
+      "fp_z": 5.64
+     },
+     {
+      "feature": "burstiness",
+      "contribution": 0.1088,
+      "live_z": -5.29,
+      "fp_z": -5.29
+     },
+     {
+      "feature": "ssh_ratio",
+      "contribution": 0.0971,
+      "live_z": 5.0,
+      "fp_z": 5.0
+     },
+     {
+      "feature": "log_pkts_ps",
+      "contribution": 0.0888,
+      "live_z": 4.78,
+      "fp_z": 4.79
+     }
+    ],
+    "top_divergent": [
+     {
+      "feature": "log_long_events",
+      "live_z": 7.31,
+      "fp_z": 5.31
+     }
+    ]
+   },
+   "categorical_detail": {
+    "per_family": {
+     "svc": 1.0,
+     "port": 1.0,
+     "flags": 1.0,
+     "size": 1.0
+    },
+    "shared": [
+     "svc:TCP/ssh/flow",
+     "port:22",
+     "port:nports:1",
+     "flags:SAF",
+     "size:2^6"
+    ],
+    "novel": []
+   }
+  },
+  "explanation": "ip:172.16.0.1 matched FP-0010 'SSH brute force #1' with score 1.00; = 0.60x0.99 (numeric cosine) + 0.40x1.00 (trait containment); strongest shared features: log_long_events (z +7.3 vs +5.3), log_pkts_per_flow (z +5.6 vs +5.6), burstiness (z -5.3 vs -5.3); known traits: svc:TCP/ssh/flow, port:22, port:nports:1, flags:SAF.",
+  "episode_id": "FP-0010/E1",
+  "rule_ids": [],
+  "escalations": []
+ },
+ {
+  "id": "AL-00003",
+  "type": "new_fingerprint",
+  "title": "New fingerprint: SSH brute force #1",
+  "fp_id": "FP-0010",
+  "fp_name": "SSH brute force #1",
+  "category": "ssh_bruteforce",
+  "severity": "high",
+  "base_severity": "high",
+  "first_seen": 1792305837.6101794,
+  "last_seen": 1792305837.6101794,
+  "count": 1,
+  "status": "open",
+  "ips": [
+   "172.16.0.1"
+  ],
+  "entity": "",
+  "score": 0.0,
+  "breakdown": {
+   "category_reasons": [
+    "SSH/Telnet",
+    "repeated connections",
+    "auth-sized flows (>= 8 packets)",
+    "but short (<= 80 packets)",
+    "single service"
+   ]
+  },
+  "explanation": "HDBSCAN formed a cluster of 5 windows; rule layer says ssh_bruteforce (SSH/Telnet; repeated connections; auth-sized flows (>= 8 packets)).",
+  "episode_id": "FP-0010/E1",
+  "rule_ids": [
+   "R-0001"
+  ],
+  "escalations": []
+ },
+ {
+  "id": "AL-00002",
+  "type": "anomaly",
+  "title": "Unknown anomaly: candidate FP-0002",
+  "fp_id": "FP-0002",
+  "fp_name": "Candidate: Normal / benign traffic (FP-0002)",
+  "category": "benign",
+  "severity": "low",
+  "base_severity": "low",
+  "first_seen": 1792305807.6101794,
+  "last_seen": 1792305822.6101794,
+  "count": 2,
+  "status": "open",
+  "ips": [
+   "103.128.203.192",
+   "109.37.24.35",
+   "109.66.178.234",
+   "109.8.194.85",
+   "141.2.82.155",
+   "141.200.206.127",
+   "159.200.5.40",
+   "159.236.85.200",
+   "46.56.67.157",
+   "91.177.202.138",
+   "93.180.55.77",
+   "93.50.31.21",
+   "185.254.32.197",
+   "195.100.81.108",
+   "217.88.38.187",
+   "37.131.144.35",
+   "46.146.201.18",
+   "62.2.215.96",
+   "78.158.105.215",
+   "78.99.117.164",
+   "85.243.217.2",
+   "85.45.81.39",
+   "91.69.34.133",
+   "94.199.139.189"
+  ],
+  "entity": "grp:UDP/dns/53/est",
+  "score": 0.0,
+  "breakdown": {
+   "anomaly_score": -0.0012
+  },
+  "explanation": "grp:UDP/dns/53/est is outside the baseline (isolation score -0.001) and matches no active fingerprint; grouped into candidate FP-0002.",
+  "episode_id": null,
+  "rule_ids": [],
+  "escalations": []
+ },
+ {
+  "id": "AL-00001",
+  "type": "anomaly",
+  "title": "Unknown anomaly: candidate FP-0001",
+  "fp_id": "FP-0001",
+  "fp_name": "Candidate: Normal / benign traffic (FP-0001)",
+  "category": "benign",
+  "severity": "low",
+  "base_severity": "low",
+  "first_seen": 1792305807.6101794,
+  "last_seen": 1792305817.6101794,
+  "count": 2,
+  "status": "open",
+  "ips": [
+   "91.68.159.136",
+   "5.0.32.231"
+  ],
+  "entity": "ip:5.0.32.231",
+  "score": 0.0,
+  "breakdown": {
+   "anomaly_score": -0.0132
+  },
+  "explanation": "ip:5.0.32.231 is outside the baseline (isolation score -0.013) and matches no active fingerprint; grouped into candidate FP-0001.",
+  "episode_id": null,
+  "rule_ids": [],
+  "escalations": []
+ }
+]
